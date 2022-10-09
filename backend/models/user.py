@@ -1,6 +1,6 @@
 """User's models."""
 
-import typing
+# import typing
 
 import pydantic
 from pydantic import EmailStr
@@ -11,7 +11,7 @@ class UserAuth(pydantic.BaseModel):
 
     email: EmailStr = pydantic.Field(...)
     password: str = pydantic.Field(..., min_length=4, max_length=15)
-    active: bool
+    active: bool | None
 
 
 class User(pydantic.BaseModel):

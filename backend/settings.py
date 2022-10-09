@@ -28,6 +28,8 @@ class _BaseSettings(pydantic.BaseSettings):
     min_pool_size: int = 10
     max_pool_size: int = 30
 
+    database_max_reties_count: int = 3
+
 
 @lru_cache
 def get_settings():
