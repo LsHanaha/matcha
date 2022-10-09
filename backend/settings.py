@@ -27,13 +27,26 @@ class _BaseSettings(pydantic.BaseSettings):
     )
     min_pool_size: int = 10
     max_pool_size: int = 30
-
     database_max_reties_count: int = 3
 
 
+class _JWTSettings(pydantic.BaseSettings):
+    """Settings for jwt."""
+
+    authjwt_secret_key: str = "super_secret_key_hwo_cares_its_for_local_dev"
+    access_token_lifetime_sec: int = 300
+    restore_token_lifetime_sec: int = 300
+
+
 @lru_cache
-def get_settings():
+def _get_settings():
     return _BaseSettings()
 
 
-base_settings = get_settings()
+@lru_cache
+def _get_jwt_settings():
+    return _JWTSettings()
+
+
+settings_base: _BaseSettings = _get_settings()
+settings_jwt: _JWTSettings = _get_jwt_settings()

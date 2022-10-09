@@ -3,6 +3,7 @@
 import fastapi
 import pydantic
 from fastapi import responses, status
+from fastapi_jwt_auth import exceptions
 
 
 class BadResponse(pydantic.BaseModel):
@@ -20,4 +21,12 @@ async def handle_error_500(
     return responses.JSONResponse(
         {"detail": BadResponse(error="Internal error.").dict()},
         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+    )
+
+
+async def authjwt_exception_handler(
+    _: fastapi.Request, exc: exceptions.AuthJWTException
+) -> responses.JSONResponse:
+    return responses.JSONResponse(
+        status_code=exc.status_code, content={"detail": exc.message}
     )

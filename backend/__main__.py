@@ -1,11 +1,13 @@
 """Main module for startup the whole backend."""
 import fastapi
+import fastapi_jwt_auth.exceptions
 import uvicorn
 from starlette.middleware.cors import CORSMiddleware
 
 from backend import ioc
 from backend.api import error_handlers
-from backend.settings import base_settings
+from backend.auth import endpoints as auth_endpoints
+from backend.settings import settings_base
 
 CONTAINER: ioc.IOCContainer = ioc.IOCContainer()
 
@@ -15,7 +17,7 @@ async def startup():
     await CONTAINER.init_resources()
 
     # TODO - new modules wire here
-    CONTAINER.wire(modules=[])
+    CONTAINER.wire(modules=[auth_endpoints])
 
 
 async def shutdown():
@@ -26,15 +28,18 @@ async def shutdown():
 APP_OBJ: fastapi.FastAPI = fastapi.FastAPI(
     on_startup=[startup],
     on_shutdown=[shutdown],
-    docs_url=base_settings.doc_prefix,
-    openapi_url=f"{base_settings.api_prefix}/openapi.json",
-    openapi_tags=base_settings.tags_metadata,
+    docs_url=settings_base.doc_prefix,
+    openapi_url=f"{settings_base.api_prefix}/openapi.json",
+    openapi_tags=settings_base.tags_metadata,
     exception_handlers={
-        fastapi.status.HTTP_500_INTERNAL_SERVER_ERROR: error_handlers.handle_error_500
+        fastapi.status.HTTP_500_INTERNAL_SERVER_ERROR: error_handlers.handle_error_500,
+        fastapi_jwt_auth.exceptions.AuthJWTException: error_handlers.authjwt_exception_handler,
     },
 )
+APP_OBJ.include_router(auth_endpoints.ROUTER_OBJ, prefix="/auth", tags=["auth"])
 
-if base_settings.debug:
+
+if settings_base.debug:
     APP_OBJ.add_middleware(
         CORSMiddleware,
         allow_origins=["*"],

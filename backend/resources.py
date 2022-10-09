@@ -19,9 +19,9 @@ class DatabaseResource(resources.AsyncResource):
     async def init(self, *args, **kwargs) -> Database:
         """Initialize database connection."""
         database_connection: Database = Database(
-            settings.base_settings.database_dsn,
-            min_size=settings.base_settings.min_pool_size,
-            max_size=settings.base_settings.max_pool_size,
+            settings.settings_base.database_dsn,
+            min_size=settings.settings_base.min_pool_size,
+            max_size=settings.settings_base.max_pool_size,
             init=self.asyncpg_init,
         )
         await database_connection.connect()

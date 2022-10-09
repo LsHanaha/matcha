@@ -16,13 +16,13 @@ class BaseAsyncRepository:
         self.database_connection: databases.Database = database_connection
 
 
-async def postgres_reconnect(func: typing.Callable):
+def postgres_reconnect(func: typing.Callable):
     """Postgres reconnect decorator."""
 
     @backoff.on_exception(
         backoff.expo,
         (PostgresConnectionError,),
-        max_tries=settings.base_settings.database_max_reties_count,
+        max_tries=settings.settings_base.database_max_reties_count,
     )
     @wraps(func)
     async def inner(*args, **kwargs):
