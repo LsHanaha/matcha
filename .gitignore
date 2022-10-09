@@ -1,5 +1,4 @@
 .idea/
 
-backend/db-data/
 backend/.env
 *__pycache__*
