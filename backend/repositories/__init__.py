@@ -12,8 +12,8 @@ from backend import settings
 class BaseAsyncRepository:
     """Database repo."""
 
-    def __init__(self, database_connection: databases.Database):
-        self.database_connection: databases.Database = database_connection
+    def __init__(self, connection: databases.Database):
+        self.database_connection: databases.Database = connection
 
 
 def postgres_reconnect(func: typing.Callable):
@@ -26,6 +26,6 @@ def postgres_reconnect(func: typing.Callable):
     )
     @wraps(func)
     async def inner(*args, **kwargs):
-        return await func(args, kwargs)
+        return await func(*args, **kwargs)
 
-    return inner()
+    return inner

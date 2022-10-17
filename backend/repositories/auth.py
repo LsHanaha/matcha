@@ -39,10 +39,12 @@ class UserAuthDatabaseResource(BaseAsyncRepository, interfaces.AuthInterface):
         """Collect user by email."""
         user: user_models.UserAuth | None = await self.database_connection.execute(
             """
-                SELECT * FROM users WHERE users.email = :email,
+                SELECT * FROM users WHERE users.email = :email;
             """,
             {"email": email},
         )
+        if user is None:
+            return None
         return user_models.UserAuth(**dict(user))
 
     @postgres_reconnect
@@ -54,11 +56,13 @@ class UserAuthDatabaseResource(BaseAsyncRepository, interfaces.AuthInterface):
             """,
             {"user_id": user_id},
         )
+        if user is None:
+            return None
         return user_models.UserAuth(**dict(user))
 
     @postgres_reconnect
     async def update_password(self, new_password: str, user_id: int) -> bool:
-        """Update password for user"""
+        """Update password for user."""
         result: int = await self.database_connection.execute(
             """
                 UPDATE users
