@@ -8,6 +8,7 @@ from pydantic import EmailStr
 
 class UserLogin(pydantic.BaseModel):
     """Model for logging user."""
+
     username: str = pydantic.Field(..., min_length=4, max_length=12)
     password: str = pydantic.Field(..., min_length=4, max_length=15)
 
@@ -20,7 +21,7 @@ class UserAuth(UserLogin):
     is_active: bool | None = False
 
 
-class User(pydantic.BaseModel):
+class UserProfile(pydantic.BaseModel):
     """Model for user about table."""
 
     user_id: int
