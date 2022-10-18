@@ -12,11 +12,15 @@ class UserAuthDatabaseResource(BaseAsyncRepository, interfaces.AuthInterface):
         """Create new user."""
         result: int = await self.database_connection.execute(
             """
-                INSERT INTO users(email, password) 
-                VALUES (:email, :password) 
+                INSERT INTO users(username, email, password) 
+                VALUES (:username, :email, :password) 
                 RETURNING 1;
             """,
-            {"email": user.email, "password": hash_password(user.password)},
+            {
+                "username": user.username,
+                "email": user.email,
+                "password": hash_password(user.password),
+            },
         )
         return bool(result)
 
@@ -35,26 +39,35 @@ class UserAuthDatabaseResource(BaseAsyncRepository, interfaces.AuthInterface):
         return bool(result)
 
     @postgres_reconnect
-    async def collect_user_by_email(self, email: str) -> user_models.UserAuth | None:
-        """Collect user by email."""
-        user: user_models.UserAuth | None = await self.database_connection.execute(
-            """
-                SELECT * FROM users WHERE users.email = :email;
-            """,
-            {"email": email},
-        )
-        if user is None:
-            return None
-        return user_models.UserAuth(**dict(user))
+    async def collect_user_from_db(
+        self,
+        username: str | None = None,
+        email: str | None = None,
+        user_id: int | None = None,
+    ) -> user_models.UserAuth | None:
+        """Collect user by one of his unique parameter."""
 
-    @postgres_reconnect
-    async def collect_user_by_id(self, user_id: int) -> user_models.UserAuth | None:
-        """Collect user by id."""
+        query_modifier: str
+        query_builder: dict[str, str]
+        if username:
+            query_modifier = "users.username = :username"
+            query_builder = {"username": username}
+        elif user_id:
+            query_modifier = "users.id = :user_id"
+            query_builder = {"user_id": str(user_id)}
+        elif email:
+            query_modifier = "users.email = :email"
+            query_builder = {"email": email}
+        else:
+            raise ValueError(
+                "Cannot fetch user from database because not enough data for query."
+            )
+
         user: user_models.UserAuth | None = await self.database_connection.execute(
-            """
-                SELECT * FROM users WHERE users.id = :user_id,
+            f"""
+                SELECT * FROM users WHERE {query_modifier};
             """,
-            {"user_id": user_id},
+            query_builder,
         )
         if user is None:
             return None

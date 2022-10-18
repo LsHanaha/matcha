@@ -1,7 +1,7 @@
 from logging.config import fileConfig
 
 from alembic import context
-from settings import base_settings
+from settings import settings_base
 from sqlalchemy import create_engine
 
 # this is the Alembic Config object, which provides
@@ -37,7 +37,7 @@ def run_migrations_offline() -> None:
     script output.
     """
     context.configure(
-        url=base_settings.database_dsn,
+        url=settings_base.database_dsn,
         target_metadata=target_metadata,
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
@@ -53,7 +53,7 @@ def run_migrations_online() -> None:
     In this scenario we need to create an Engine and associate a
     connection with the context.
     """
-    connectable = create_engine(base_settings.database_dsn)
+    connectable = create_engine(settings_base.database_dsn)
 
     with connectable.connect() as connection:
         context.configure(connection=connection, target_metadata=target_metadata)

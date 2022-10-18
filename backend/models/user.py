@@ -6,12 +6,17 @@ import pydantic
 from pydantic import EmailStr
 
 
-class UserAuth(pydantic.BaseModel):
+class UserLogin(pydantic.BaseModel):
+    """Model for logging user."""
+    username: str = pydantic.Field(..., min_length=4, max_length=12)
+    password: str = pydantic.Field(..., min_length=4, max_length=15)
+
+
+class UserAuth(UserLogin):
     """User authentication model."""
 
     id: int | None
     email: EmailStr = pydantic.Field(...)
-    password: str = pydantic.Field(..., min_length=4, max_length=15)
     is_active: bool | None = False
 
 

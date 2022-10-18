@@ -17,12 +17,10 @@ class AuthInterface(ABC):
         """Activate user account."""
 
     @abstractmethod
-    async def collect_user_by_email(self, email: str) -> user_models.UserAuth | None:
-        """Collect user by email."""
-
-    @abstractmethod
-    async def collect_user_by_id(self, user_id: int) -> user_models.UserAuth | None:
-        """Collect user by id."""
+    async def collect_user_from_db(
+        self, username: str | None, user_id: int | None, email: str | None
+    ) -> user_models.UserAuth | None:
+        """Collect user by unique parameter."""
 
     @abstractmethod
     async def update_password(self, new_password: str, user_id: int) -> bool:

@@ -23,8 +23,8 @@ async def create_user(
     ),
 ) -> dict[str, bool]:
     """Create new user."""
-    user_in_db: user_models.UserAuth | None = await db_repository.collect_user_by_email(
-        new_user.email
+    user_in_db: user_models.UserAuth | None = await db_repository.collect_user_from_db(
+        email=new_user.email
     )
     if user_in_db:
         raise fastapi.HTTPException(
@@ -38,15 +38,15 @@ async def create_user(
 @ROUTER_OBJ.post("/login/", response_model=user_models.AuthResponse)
 @inject
 async def validate_user(
-    user: user_models.UserAuth,
+    user: user_models.UserLogin,
     db_repository: db_auth_repository.UserAuthDatabaseResource = fastapi.Depends(
         Provide[ioc.IOCContainer.auth_repository]
     ),
     authorize: AuthJWT = fastapi.Depends(),
 ) -> user_models.AuthResponse:
     """Validate user and return tokens."""
-    user_in_db: user_models.UserAuth = await db_repository.collect_user_by_email(
-        user.email
+    user_in_db: user_models.UserAuth = await db_repository.collect_user_from_db(
+        username=user.username
     )
     if not user_in_db:
         raise fastapi.HTTPException(
@@ -92,15 +92,15 @@ async def refresh_access_token(
     """Activate user."""
 
     authorize.jwt_refresh_token_required(token=refresh_token)
-    current_user: int = authorize.get_jwt_subject()
-    user_in_db: user_models.UserAuth = await db_repository.collect_user_by_id(
-        current_user
+    user_id: int = authorize.get_jwt_subject()
+    user_in_db: user_models.UserAuth = await db_repository.collect_user_from_db(
+        user_id=user_id
     )
     if not user_in_db.is_active:
         raise fastapi.HTTPException(
             status_code=fastapi.status.HTTP_403_FORBIDDEN, detail="User is not active"
         )
-    return {"access_token": tokens.create_access_token(authorize, current_user)}
+    return {"access_token": tokens.create_access_token(authorize, user_id)}
 
 
 @ROUTER_OBJ.post("/restore-password-query/")
