@@ -4,7 +4,9 @@ from backend.models import user as user_models
 from backend.repositories import BaseAsyncRepository, interfaces, postgres_reconnect
 
 
-class UserAuthDatabaseResource(BaseAsyncRepository, interfaces.AuthInterface):
+class UserAuthDatabaseResourceRepository(
+    BaseAsyncRepository, interfaces.AuthRepositoryInterface
+):
     """Class for saving and maintaining user auth repo."""
 
     @postgres_reconnect

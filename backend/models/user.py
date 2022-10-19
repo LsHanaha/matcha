@@ -1,9 +1,11 @@
 """User's models."""
-
-# import typing
+import datetime
+import typing
 
 import pydantic
 from pydantic import EmailStr
+
+from backend.models import enums as enums_models
 
 
 class UserLogin(pydantic.BaseModel):
@@ -24,12 +26,16 @@ class UserAuth(UserLogin):
 class UserProfile(pydantic.BaseModel):
     """Model for user about table."""
 
-    user_id: int
+    user_id: int | None
     first_name: str
     last_name: str
-    # gender: typing.Literal["male", "female", None]
-    # preferences: list[str]
-    # about: str | None
+    birthday: datetime.date
+    gender: enums_models.GenderEnum
+    sexual_preferences: enums_models.SexualPreferencesEnum = (
+        enums_models.SexualPreferencesEnum.BI
+    )
+    biography: str | None
+    main_photo_name: str
     # interests: list[str]
 
 

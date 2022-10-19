@@ -5,7 +5,7 @@ from abc import ABC, abstractmethod
 from backend.models import user as user_models
 
 
-class AuthInterface(ABC):
+class AuthRepositoryInterface(ABC):
     """Interface for auth purpose."""
 
     @abstractmethod
@@ -25,3 +25,15 @@ class AuthInterface(ABC):
     @abstractmethod
     async def update_password(self, new_password: str, user_id: int) -> bool:
         """Update password for user."""
+
+
+class ProfileRepositoryInterface(ABC):
+    """Interface for user profile."""
+
+    @abstractmethod
+    async def collect_user_profile(self, user_id: int) -> user_models.UserProfile:
+        """Collect =profile for a user."""
+
+    @abstractmethod
+    async def update_user_profile(self, user_profile: user_models.UserProfile) -> bool:
+        """Update profile for a user."""

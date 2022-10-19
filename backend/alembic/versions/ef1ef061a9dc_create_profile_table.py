@@ -23,9 +23,9 @@ def upgrade() -> None:
         sa.Column("last_name", sa.String, nullable=False),
         sa.Column("birthday", sa.Date, nullable=False),
         sa.Column("gender", sa.SmallInteger, nullable=False),
-        sa.Column("sexual_preferences", sa.SmallInteger, nullable=False),
+        sa.Column("sexual_preferences", sa.SmallInteger, nullable=False, default=0),
         sa.Column("biography", sa.Text, nullable=True),
-        sa.Column("main_photo", sa.String, nullable=False),
+        sa.Column("main_photo_name", sa.String, nullable=False),
     )
 
 
