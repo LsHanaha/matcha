@@ -27,6 +27,9 @@ def upgrade() -> None:
         sa.Column("last_visit_time", sa.DateTime, onupdate=sa.func.current_timestamp()),
         sa.Column("is_match", sa.Boolean, default=False),
     )
+    op.create_unique_constraint(
+        "uc_users_pair", "visits", ["visited_user_id", "visitor_user_id"]
+    )
 
 
 def downgrade() -> None:
