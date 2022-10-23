@@ -16,18 +16,23 @@ depends_on = None
 
 def upgrade() -> None:
     op.create_table(
-        "gps",
+        "user_locations",
         sa.Column("id", sa.Integer, primary_key=True),
-        sa.Column("user_id", sa.Integer, sa.ForeignKey("users.id", ondelete="CASCADE")),
+        sa.Column(
+            "user_id",
+            sa.Integer,
+            sa.ForeignKey("users.id", ondelete="CASCADE"),
+            unique=True,
+        ),
         sa.Column("ip_addr", sa.String, nullable=False),
         sa.Column("country", sa.String, nullable=False),
         sa.Column("region", sa.String, nullable=True),
         sa.Column("city", sa.String, nullable=False),
-        sa.Column("lat", sa.Float, nullable=False),
-        sa.Column("lng", sa.Float, nullable=False),
+        sa.Column("latitude", sa.Float, nullable=False),
+        sa.Column("longitude", sa.Float, nullable=False),
         sa.Column("tz", sa.String, nullable=True),
     )
 
 
 def downgrade() -> None:
-    op.drop_table("gps")
+    op.drop_table("user_locations")

@@ -38,6 +38,13 @@ class _JWTSettings(pydantic.BaseSettings):
     restore_token_lifetime_sec: int = 300
 
 
+class _LocationSettings(pydantic.BaseSettings):
+    """Settings for location."""
+
+    service_url: str = "http://ipwho.is/"
+    max_retries: int = 3
+
+
 @lru_cache
 def _get_settings():
     return _BaseSettings()
@@ -50,3 +57,4 @@ def _get_jwt_settings():
 
 settings_base: _BaseSettings = _get_settings()
 settings_jwt: _JWTSettings = _get_jwt_settings()
+settings_location: _LocationSettings = _LocationSettings()

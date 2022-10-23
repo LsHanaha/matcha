@@ -1,5 +1,7 @@
 """Repository for user profile."""
 
+from databases.interfaces import Record
+
 from backend.models import user as user_models
 from backend.repositories import BaseAsyncRepository, interfaces, postgres_reconnect
 
@@ -14,7 +16,7 @@ class UserProfileDatabaseRepository(
         self, user_id: int
     ) -> user_models.UserProfile | None:
         """Collect user profile."""
-        user_dict: dict | None = await self.database_connection.execute(
+        user_dict: Record | None = await self.database_connection.execute(
             """
             SELECT * 
             FROM profiles

@@ -36,7 +36,7 @@ class UserProfile(pydantic.BaseModel):
     )
     biography: str | None
     main_photo_name: str
-    # interests: list[str]
+    interests: list[int]
 
 
 class AuthResponse(pydantic.BaseModel):

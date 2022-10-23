@@ -2,6 +2,7 @@
 
 from abc import ABC, abstractmethod
 
+from backend.models import location_models
 from backend.models import user as user_models
 
 
@@ -37,3 +38,22 @@ class ProfileRepositoryInterface(ABC):
     @abstractmethod
     async def update_user_profile(self, user_profile: user_models.UserProfile) -> bool:
         """Update profile for a user."""
+
+
+class LocationRepositoryInterface(ABC):
+    """Interface for user location."""
+
+    @abstractmethod
+    async def collect_user_location(
+        self, user_id: int
+    ) -> location_models.LocationRepositoryModel | None:
+        """Get user location from database."""
+
+    @abstractmethod
+    async def update_user_location(
+        self, user_id: int, new_location: location_models.LocationRepositoryModel
+    ) -> bool:
+        """Update user location."""
+
+
+""
