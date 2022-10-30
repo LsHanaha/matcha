@@ -1,7 +1,8 @@
 """Repo for auth."""
 from backend.auth.__main__ import hash_password
-from backend.models import user as user_models
-from backend.repositories import BaseAsyncRepository, interfaces, postgres_reconnect
+from backend.models import models_user as user_models
+from backend.repositories import (BaseAsyncRepository, interfaces,
+                                  postgres_reconnect)
 
 
 class UserAuthDatabaseResourceRepository(

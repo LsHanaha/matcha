@@ -1,8 +1,9 @@
 """Handle user location in database."""
 from databases.interfaces import Record
 
-from backend.models import location_models
-from backend.repositories import BaseAsyncRepository, interfaces, postgres_reconnect
+from backend.models import models_location
+from backend.repositories import (BaseAsyncRepository, interfaces,
+                                  postgres_reconnect)
 
 
 class LocationDatabaseRepository(
@@ -13,7 +14,7 @@ class LocationDatabaseRepository(
     @postgres_reconnect
     async def collect_user_location(
         self, user_id: int
-    ) -> location_models.LocationRepositoryModel | None:
+    ) -> models_location.LocationRepositoryModel | None:
         """Collect user location."""
         location_record: Record | None = await self.database_connection.execute(
             """
@@ -25,11 +26,11 @@ class LocationDatabaseRepository(
         )
         if not location_record:
             return None
-        return location_models.LocationRepositoryModel(**dict(location_record))
+        return models_location.LocationRepositoryModel(**dict(location_record))
 
     @postgres_reconnect
     async def update_user_location(
-        self, user_id: int, new_location: location_models.LocationRepositoryModel
+        self, user_id: int, new_location: models_location.LocationRepositoryModel
     ) -> bool:
         """Update location for a user."""
         result: int = await self.database_connection.execute(
@@ -44,4 +45,4 @@ class LocationDatabaseRepository(
             """,
             new_location.dict(),
         )
-        return result
+        return bool(result)

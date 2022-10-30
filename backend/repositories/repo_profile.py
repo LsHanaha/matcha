@@ -2,7 +2,7 @@
 
 from databases.interfaces import Record
 
-from backend.models import user as user_models
+from backend.models import models_user as user_models
 from backend.repositories import BaseAsyncRepository, interfaces, postgres_reconnect
 
 

@@ -8,8 +8,8 @@ from fastapi_jwt_auth.exceptions import AuthJWTException
 from backend import ioc
 from backend.auth import auth_handle_mail, auth_tokens
 from backend.auth.__main__ import check_is_password_valid
-from backend.models import user as user_models
-from backend.repositories import auth as db_auth_repository
+from backend.models import models_user as user_models
+from backend.repositories import repo_auth as db_auth_repository
 
 ROUTER_OBJ: fastapi.APIRouter = fastapi.APIRouter()
 

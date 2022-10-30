@@ -4,13 +4,11 @@
 import fastapi
 from dependency_injector.wiring import Provide, inject
 from fastapi_jwt_auth import AuthJWT
-from fastapi_jwt_auth.exceptions import AuthJWTException
 
 from backend import ioc
-from backend.auth import tokens
-from backend.models import base as models_base
-from backend.models import user as models_user
-from backend.repositories import profile as profile_repositories
+from backend.models import models_base as models_base
+from backend.models import models_user as models_user
+from backend.repositories import repo_profile as profile_repositories
 
 ROUTER_OBJ: fastapi.APIRouter = fastapi.APIRouter()
 

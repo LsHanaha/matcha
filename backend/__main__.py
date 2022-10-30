@@ -6,7 +6,7 @@ from starlette.middleware.cors import CORSMiddleware
 
 from backend import ioc
 from backend.api import error_handlers
-from backend.auth import endpoints as auth_endpoints
+from backend.auth import auth_endpoints
 from backend.settings import settings_base
 
 CONTAINER: ioc.IOCContainer = ioc.IOCContainer()

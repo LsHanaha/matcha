@@ -2,8 +2,8 @@
 
 from abc import ABC, abstractmethod
 
-from backend.models import location_models
-from backend.models import user as user_models
+from backend.models import models_location
+from backend.models import models_user as user_models
 
 
 class AuthRepositoryInterface(ABC):
@@ -46,12 +46,12 @@ class LocationRepositoryInterface(ABC):
     @abstractmethod
     async def collect_user_location(
         self, user_id: int
-    ) -> location_models.LocationRepositoryModel | None:
+    ) -> models_location.LocationRepositoryModel | None:
         """Get user location from database."""
 
     @abstractmethod
     async def update_user_location(
-        self, user_id: int, new_location: location_models.LocationRepositoryModel
+        self, user_id: int, new_location: models_location.LocationRepositoryModel
     ) -> bool:
         """Update user location."""
 

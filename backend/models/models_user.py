@@ -5,7 +5,7 @@ import typing
 import pydantic
 from pydantic import EmailStr
 
-from backend.models import enums as enums_models
+from backend.models import models_enums as enums_models
 
 
 class UserLogin(pydantic.BaseModel):

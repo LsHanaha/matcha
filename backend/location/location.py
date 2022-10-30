@@ -4,8 +4,8 @@ import backoff
 import fastapi
 import httpx
 
-from backend.models import location_models
-from backend.repositories import location_repositories
+from backend.models import models_location
+from backend.repositories import repo_location
 from backend.settings import settings_location
 
 
@@ -34,7 +34,7 @@ class LocationClient:
     )
     async def collect_location(
         self, ip_addr: str, headers: None | dict[str, str] = None
-    ) -> location_models.IPWhoISApiResponseModel:
+    ) -> models_location.IPWhoISApiResponseModel:
         """Collect Location data by ip."""
         response: httpx.Response = await self._http_client.get(
             url=ip_addr, headers=headers
@@ -45,8 +45,8 @@ class LocationClient:
             raise fastapi.HTTPException(
                 status_code=response.status_code, detail=str(unexpected_exception)
             )
-        response_data: location_models.IPWhoISApiResponseModel = (
-            location_models.IPWhoISApiResponseModel(**response.json())
+        response_data: models_location.IPWhoISApiResponseModel = (
+            models_location.IPWhoISApiResponseModel(**response.json())
         )
         return response_data
 
@@ -57,16 +57,16 @@ class UserLocation:
     def __init__(
         self,
         location_client: LocationClient,
-        location_repository: location_repositories.LocationDatabaseRepository,
+        location_repository: repo_location.LocationDatabaseRepository,
     ):
         self._location_client: LocationClient = location_client
-        self._location_repository: location_repositories.LocationDatabaseRepository = (
+        self._location_repository: repo_location.LocationDatabaseRepository = (
             location_repository
         )
 
     async def collect_user_location(
         self, user_id: int
-    ) -> location_models.LocationRepositoryModel | None:
+    ) -> models_location.LocationRepositoryModel | None:
         """Get user location from database."""
         return await self._location_repository.collect_user_location(user_id)
 
@@ -76,20 +76,20 @@ class UserLocation:
         new_ip_addr: str,
     ) -> None | bool:
         """Collect user location by it's ip."""
-        location_in_database: location_models.LocationRepositoryModel = (
+        location_in_database: models_location.LocationRepositoryModel = (
             await self._location_repository.collect_user_location(user_id)
         )
         if location_in_database.ip_addr == new_ip_addr:
             # Refresh nor required
             return
-        new_location: location_models.IPWhoISApiResponseModel = (
+        new_location: models_location.IPWhoISApiResponseModel = (
             await self._location_client.collect_location(new_ip_addr)
         )
         if not new_location or not new_location.success:
             # Not possible to handle location
             return None
         is_updated: bool = await self._location_repository.update_user_location(
-            location_models.LocationRepositoryModel(
+            models_location.LocationRepositoryModel(
                 user_id=user_id,
                 ip_addr=new_ip_addr,
                 country=new_location.country,

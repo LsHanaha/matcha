@@ -3,8 +3,8 @@
 import resources
 from dependency_injector import containers, providers
 
-from backend.repositories.auth import UserAuthDatabaseResourceRepository
-from backend.repositories.profile import UserProfileDatabaseRepository
+from backend.repositories.repo_auth import UserAuthDatabaseResourceRepository
+from backend.repositories.repo_profile import UserProfileDatabaseRepository
 
 
 class IOCContainer(containers.DeclarativeContainer):
