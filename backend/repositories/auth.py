@@ -10,13 +10,13 @@ class UserAuthDatabaseResourceRepository(
     """Class for saving and maintaining user auth repo."""
 
     @postgres_reconnect
-    async def create_user(self, user: user_models.UserAuth) -> bool:
+    async def create_user(self, user: user_models.UserAuth) -> int:
         """Create new user."""
-        result: int = await self.database_connection.execute(
+        user_id: int = await self.database_connection.execute(
             """
                 INSERT INTO users(username, email, password) 
                 VALUES (:username, :email, :password) 
-                RETURNING 1;
+                RETURNING id;
             """,
             {
                 "username": user.username,
@@ -24,7 +24,7 @@ class UserAuthDatabaseResourceRepository(
                 "password": hash_password(user.password),
             },
         )
-        return bool(result)
+        return user_id
 
     @postgres_reconnect
     async def activate_user(self, user_id: str) -> bool:

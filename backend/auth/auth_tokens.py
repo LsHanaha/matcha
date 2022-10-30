@@ -20,5 +20,7 @@ def create_refresh_token(authorize: AuthJWT, user_id: int) -> str:
 def create_restore_token(authorize: AuthJWT, email: str) -> str:
     """Create restore token from email."""
     return authorize.create_access_token(
-        subject=email, expires_time=settings_jwt.restore_token_lifetime_sec
+        subject=email,
+        expires_time=settings_jwt.restore_token_lifetime_sec,
+        user_claims={"scope": "restore"},
     )

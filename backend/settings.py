@@ -38,6 +38,21 @@ class _JWTSettings(pydantic.BaseSettings):
     restore_token_lifetime_sec: int = 300
 
 
+class _MailSettings(pydantic.BaseSettings):
+    """Settings for mail sender."""
+
+    mail_token_lifetime: int = 259200
+    mail_user: str
+    mail_address: str
+    mail_pwd: str
+    mail_server: str = "smtp.gmail.com"
+    mail_port: int = 587
+
+    def is_enough_settings(self) -> bool:
+        """Check is data enough to send a message wia email."""
+        return True and self.mail_user and self.mail_pwd and self.mail_address
+
+
 class _LocationSettings(pydantic.BaseSettings):
     """Settings for location."""
 
@@ -58,3 +73,4 @@ def _get_jwt_settings():
 settings_base: _BaseSettings = _get_settings()
 settings_jwt: _JWTSettings = _get_jwt_settings()
 settings_location: _LocationSettings = _LocationSettings()
+settings_mail: _MailSettings = _MailSettings()
