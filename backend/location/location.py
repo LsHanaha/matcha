@@ -51,7 +51,7 @@ class LocationClient:
         return response_data
 
 
-class UserLocation:
+class LocationService:
     """Collect and handle user location."""
 
     def __init__(
