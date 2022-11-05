@@ -42,9 +42,9 @@ class _MailSettings(pydantic.BaseSettings):
     """Settings for mail sender."""
 
     mail_token_lifetime: int = 259200
-    mail_user: str
-    mail_address: str
-    mail_pwd: str
+    mail_user: str | None
+    mail_address: str | None
+    mail_pwd: str | None
     mail_server: str = "smtp.gmail.com"
     mail_port: int = 587
 

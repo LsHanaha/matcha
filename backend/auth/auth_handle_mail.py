@@ -6,17 +6,18 @@ from fastapi_mail import ConnectionConfig, FastMail, MessageSchema
 from backend.auth.auth_tokens import create_access_token, create_restore_token
 from backend.settings import settings_mail
 
-conf = ConnectionConfig(
-    MAIL_USERNAME=settings_mail.mail_address,
-    MAIL_PASSWORD=settings_mail.mail_pwd,
-    MAIL_FROM=settings_mail.mail_address,
-    MAIL_FROM_NAME=settings_mail.mail_user,
-    MAIL_PORT=settings_mail.mail_port,
-    MAIL_SERVER=settings_mail.mail_server,
-    MAIL_TLS=True,
-    MAIL_SSL=False,
-    USE_CREDENTIALS=True,
-)
+if settings_mail.is_enough_settings():
+    conf = ConnectionConfig(
+        MAIL_USERNAME=settings_mail.mail_address,
+        MAIL_PASSWORD=settings_mail.mail_pwd,
+        MAIL_FROM=settings_mail.mail_address,
+        MAIL_FROM_NAME=settings_mail.mail_user,
+        MAIL_PORT=settings_mail.mail_port,
+        MAIL_SERVER=settings_mail.mail_server,
+        MAIL_TLS=True,
+        MAIL_SSL=False,
+        USE_CREDENTIALS=True,
+    )
 
 
 async def send_activate_account_mail(

@@ -8,10 +8,10 @@ from backend import ioc
 from backend.models import models_base, models_preferences
 from backend.repositories import repo_interfaces
 
-ROUTE_OBJ: fastapi.APIRouter = fastapi.APIRouter()
+ROUTER_OBJ: fastapi.APIRouter = fastapi.APIRouter()
 
 
-@ROUTE_OBJ.get(
+@ROUTER_OBJ.get(
     "/preferences/{user_id}/", response_model=models_preferences.UserPreferences
 )
 @inject
@@ -35,7 +35,7 @@ async def get_preferences(
     return user_preferences
 
 
-@ROUTE_OBJ.post("/profile/{user_id}/", response_model=models_base.ResponseModel)
+@ROUTER_OBJ.post("/profile/{user_id}/", response_model=models_base.ResponseModel)
 @inject
 async def update_preferences(
     user_id: int,

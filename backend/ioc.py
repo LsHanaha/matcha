@@ -47,16 +47,12 @@ class IOCContainer(containers.DeclarativeContainer):
         InterestsDatabaseRepository, database_connection=database_connection
     )
 
-    location_client: providers.Resource[
-        location_endpoints.LocationClient
-    ] = providers.Resource(
-        location_endpoints.LocationClient,
+    location_client: providers.Resource[locations.LocationClient] = providers.Resource(
+        locations.LocationClient,
         base_url=settings.settings_location.service_url,
     )
-    location_service: providers.Factory[
-        location_endpoints.LocationService
-    ] = providers.Factory(
-        location_endpoints.LocationService,
+    location_service: providers.Factory[locations.LocationService] = providers.Factory(
+        locations.LocationService,
         location_client=location_client,
         location_repository=location_repository,
     )

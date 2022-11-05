@@ -5,7 +5,12 @@ import uvicorn
 from starlette.middleware.cors import CORSMiddleware
 
 from backend import ioc
-from backend.api import error_handlers, preference_endpoints, profile_endpoints
+from backend.api import (
+    error_handlers,
+    interests_endpoints,
+    preference_endpoints,
+    profile_endpoints,
+)
 from backend.auth import auth_endpoints
 from backend.settings import settings_base
 
@@ -17,7 +22,14 @@ async def startup():
     await CONTAINER.init_resources()
 
     # TODO - new modules wire here
-    CONTAINER.wire(modules=[auth_endpoints, profile_endpoints, preference_endpoints])
+    CONTAINER.wire(
+        modules=[
+            auth_endpoints,
+            profile_endpoints,
+            preference_endpoints,
+            interests_endpoints,
+        ]
+    )
 
 
 async def shutdown():
@@ -37,6 +49,15 @@ APP_OBJ: fastapi.FastAPI = fastapi.FastAPI(
     },
 )
 APP_OBJ.include_router(auth_endpoints.ROUTER_OBJ, prefix="/auth", tags=["auth"])
+APP_OBJ.include_router(
+    profile_endpoints.ROUTER_OBJ, prefix="/profile", tags=["profile"]
+)
+APP_OBJ.include_router(
+    preference_endpoints.ROUTER_OBJ, prefix="/preferences", tags=["preferences"]
+)
+APP_OBJ.include_router(
+    interests_endpoints.ROUTER_OBJ, prefix="/interests", tags=["interests"]
+)
 
 
 if settings_base.debug:
