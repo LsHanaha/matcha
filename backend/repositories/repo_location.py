@@ -1,9 +1,9 @@
 """Handle user location in database."""
+
 from databases.interfaces import Record
 
 from backend.models import models_location
-from backend.repositories import (BaseAsyncRepository, interfaces,
-                                  postgres_reconnect)
+from backend.repositories import BaseAsyncRepository, interfaces, postgres_reconnect
 
 
 class LocationDatabaseRepository(

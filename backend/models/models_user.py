@@ -1,11 +1,11 @@
 """User's models."""
+
 import datetime
-import typing
 
 import pydantic
 from pydantic import EmailStr
 
-from backend.models import models_enums as enums_models
+from backend.models import models_enums
 
 
 class UserLogin(pydantic.BaseModel):
@@ -30,16 +30,16 @@ class UserProfile(pydantic.BaseModel):
     first_name: str
     last_name: str
     birthday: datetime.date
-    gender: enums_models.GenderEnum
-    sexual_preferences: enums_models.SexualPreferencesEnum = (
-        enums_models.SexualPreferencesEnum.BI
+    gender: models_enums.GenderEnum
+    sexual_orientation: models_enums.SexualPreferencesEnum = (
+        models_enums.SexualPreferencesEnum.BI
     )
     biography: str | None
     main_photo_name: str
     interests: list[int]
 
 
-class AuthResponse(pydantic.BaseModel):
+class LoginResponse(pydantic.BaseModel):
     """Return tokens after authentication."""
 
     access_token: str

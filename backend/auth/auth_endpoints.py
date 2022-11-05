@@ -39,7 +39,7 @@ async def create_user(
     return {"status": bool(user_id)}
 
 
-@ROUTER_OBJ.post("/login/", response_model=user_models.AuthResponse)
+@ROUTER_OBJ.post("/login/", response_model=user_models.LoginResponse)
 @inject
 async def validate_user(
     user: user_models.UserLogin,
@@ -47,7 +47,7 @@ async def validate_user(
         Provide[ioc.IOCContainer.auth_repository]
     ),
     authorize: AuthJWT = fastapi.Depends(),
-) -> user_models.AuthResponse:
+) -> user_models.LoginResponse:
     """Validate user and return tokens."""
     user_in_db: user_models.UserAuth = await db_repository.collect_user_from_db(
         username=user.username
@@ -63,7 +63,7 @@ async def validate_user(
         )
     if not check_is_password_valid(user.password, user_in_db.password):
         raise AuthJWTException("Wrong username or password")
-    return user_models.AuthResponse(
+    return user_models.LoginResponse(
         access_token=auth_tokens.create_access_token(authorize, user_in_db.id),
         refresh_token=auth_tokens.create_refresh_token(authorize, user_in_db.id),
     )

@@ -3,10 +3,12 @@ import fastapi
 import fastapi_jwt_auth.exceptions
 import uvicorn
 from starlette.middleware.cors import CORSMiddleware
+from users_preference import preference_endpoints
 
 from backend import ioc
 from backend.api import error_handlers
 from backend.auth import auth_endpoints
+from backend.profile import profile_endpoints
 from backend.settings import settings_base
 
 CONTAINER: ioc.IOCContainer = ioc.IOCContainer()
@@ -17,7 +19,7 @@ async def startup():
     await CONTAINER.init_resources()
 
     # TODO - new modules wire here
-    CONTAINER.wire(modules=[auth_endpoints])
+    CONTAINER.wire(modules=[auth_endpoints, profile_endpoints, preference_endpoints])
 
 
 async def shutdown():

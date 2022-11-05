@@ -1,13 +1,11 @@
 """Endpoints for user's profile."""
 
-
 import fastapi
 from dependency_injector.wiring import Provide, inject
 from fastapi_jwt_auth import AuthJWT
 
 from backend import ioc
-from backend.models import models_base as models_base
-from backend.models import models_user as models_user
+from backend.models import models_base, models_user
 from backend.repositories import repo_profile as profile_repositories
 
 ROUTER_OBJ: fastapi.APIRouter = fastapi.APIRouter()

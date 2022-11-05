@@ -2,7 +2,7 @@
 
 from abc import ABC, abstractmethod
 
-from backend.models import models_location
+from backend.models import models_location, models_preferences
 from backend.models import models_user as user_models
 
 
@@ -56,4 +56,17 @@ class LocationRepositoryInterface(ABC):
         """Update user location."""
 
 
-""
+class PreferenceRepositoryInterface(ABC):
+    """Interface for user location."""
+
+    @abstractmethod
+    async def collect_user_preference(
+        self, user_id: int
+    ) -> models_preferences.UserPreferences | None:
+        """Get user location from database."""
+
+    @abstractmethod
+    async def update_user_preference(
+        self, new_preferences: models_preferences.UserPreferences
+    ) -> bool:
+        """Update user location."""
