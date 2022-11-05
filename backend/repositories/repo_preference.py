@@ -36,6 +36,14 @@ class PreferenceDatabaseRepository(
 
         result: int = await self.database_connection.execute(
             """
-            
+            INSERT INTO preferences(user_id, sexual_preferences, min_fame_rating, min_age, max_age, max_distance_km)
+            VALUES (:user_id, :sexual_preferences, :min_fame_rating, :min_age, :max_age, :max_distance_km)
+            ON CONFLICT(user_id)
+            DO UPDATE SET
+            sexual_preferences=:sexual_preferences, min_fame_rating=:min_fame_rating, min_age=:min_age, 
+                max_age=:max_age, max_distance_km=:max_distance_km
+            WHERE user_id=:user_id
+            RETURNING 1;
             """
         )
+        return bool(result)
