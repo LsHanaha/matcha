@@ -4,7 +4,7 @@ import resources
 from dependency_injector import containers, providers
 
 from backend import settings
-from backend.location import location
+from backend.api import location_endpoints
 from backend.repositories.repo_auth import UserAuthDatabaseResourceRepository
 from backend.repositories.repo_location import LocationDatabaseRepository
 from backend.repositories.repo_preference import PreferenceDatabaseRepository
