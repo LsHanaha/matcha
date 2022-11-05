@@ -9,7 +9,7 @@ from backend import ioc
 from backend.auth import auth_handle_mail, auth_tokens
 from backend.auth.__main__ import check_is_password_valid
 from backend.models import models_user as user_models
-from backend.repositories import repo_auth as db_auth_repository
+from backend.repositories import repo_interfaces
 
 ROUTER_OBJ: fastapi.APIRouter = fastapi.APIRouter()
 
@@ -19,7 +19,7 @@ ROUTER_OBJ: fastapi.APIRouter = fastapi.APIRouter()
 async def create_user(
     new_user: user_models.UserAuth,
     background_tasks: fastapi.BackgroundTasks,
-    db_repository: db_auth_repository.UserAuthDatabaseResourceRepository = fastapi.Depends(
+    db_repository: repo_interfaces.AuthRepositoryInterface = fastapi.Depends(
         Provide[ioc.IOCContainer.auth_repository],
     ),
 ) -> dict[str, bool]:
@@ -43,7 +43,7 @@ async def create_user(
 @inject
 async def validate_user(
     user: user_models.UserLogin,
-    db_repository: db_auth_repository.UserAuthDatabaseResourceRepository = fastapi.Depends(
+    db_repository: repo_interfaces.AuthRepositoryInterface = fastapi.Depends(
         Provide[ioc.IOCContainer.auth_repository]
     ),
     authorize: AuthJWT = fastapi.Depends(),
@@ -73,8 +73,8 @@ async def validate_user(
 @inject
 async def activate_user(
     activation_token: str,
-    db_repository: db_auth_repository.UserAuthDatabaseResourceRepository = fastapi.Depends(
-        Provide[db_auth_repository.UserAuthDatabaseResourceRepository]
+    db_repository: repo_interfaces.AuthRepositoryInterface = fastapi.Depends(
+        Provide[ioc.IOCContainer.auth_repository]
     ),
     authorize: AuthJWT = fastapi.Depends(),
 ) -> dict[str, bool]:
@@ -88,8 +88,8 @@ async def activate_user(
 @inject
 async def refresh_access_token(
     refresh_token: str,
-    db_repository: db_auth_repository.UserAuthDatabaseResourceRepository = fastapi.Depends(
-        Provide[db_auth_repository.UserAuthDatabaseResourceRepository]
+    db_repository: repo_interfaces.AuthRepositoryInterface = fastapi.Depends(
+        Provide[ioc.IOCContainer.auth_repository]
     ),
     authorize: AuthJWT = fastapi.Depends(),
 ) -> dict[str, str]:
@@ -112,8 +112,8 @@ async def refresh_access_token(
 async def restore_password_query(
     email: str,
     background_tasks: fastapi.BackgroundTasks,
-    db_repository: db_auth_repository.UserAuthDatabaseResourceRepository = fastapi.Depends(
-        Provide[db_auth_repository.UserAuthDatabaseResourceRepository]
+    db_repository: repo_interfaces.AuthRepositoryInterface = fastapi.Depends(
+        Provide[ioc.IOCContainer.auth_repository]
     ),
 ) -> dict:
     """Query for restore token."""
@@ -133,8 +133,8 @@ async def restore_password_query(
 async def restore_user_password(
     restore_token: str,
     new_password: str,
-    db_repository: db_auth_repository.UserAuthDatabaseResourceRepository = fastapi.Depends(
-        Provide[db_auth_repository.UserAuthDatabaseResourceRepository]
+    db_repository: repo_interfaces.AuthRepositoryInterface = fastapi.Depends(
+        Provide[ioc.IOCContainer.auth_repository]
     ),
     authorize: AuthJWT = fastapi.Depends(),
 ) -> dict:

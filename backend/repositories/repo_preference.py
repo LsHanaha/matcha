@@ -3,11 +3,15 @@
 from databases.interfaces import Record
 
 from backend.models import models_preferences
-from backend.repositories import BaseAsyncRepository, interfaces, postgres_reconnect
+from backend.repositories import (
+    BaseAsyncRepository,
+    postgres_reconnect,
+    repo_interfaces,
+)
 
 
 class PreferenceDatabaseRepository(
-    BaseAsyncRepository, interfaces.PreferenceRepositoryInterface
+    BaseAsyncRepository, repo_interfaces.PreferenceRepositoryInterface
 ):
     """User preferences."""
 
@@ -44,6 +48,7 @@ class PreferenceDatabaseRepository(
                 max_age=:max_age, max_distance_km=:max_distance_km
             WHERE user_id=:user_id
             RETURNING 1;
-            """
+            """,
+            {**new_preferences.dict()},
         )
         return bool(result)

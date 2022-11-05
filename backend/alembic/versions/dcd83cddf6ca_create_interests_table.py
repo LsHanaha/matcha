@@ -18,7 +18,7 @@ def upgrade() -> None:
     op.create_table(
         "interests",
         sa.Column("id", sa.Integer, primary_key=True),
-        sa.Column("name", sa.Text, nullable=False),
+        sa.Column("name", sa.Text, nullable=False, unique=True),
     )
 
 

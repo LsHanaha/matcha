@@ -5,7 +5,7 @@ import fastapi
 import httpx
 
 from backend.models import models_location
-from backend.repositories import repo_location
+from backend.repositories import repo_interfaces
 from backend.settings import settings_location
 
 
@@ -57,10 +57,10 @@ class LocationService:
     def __init__(
         self,
         location_client: LocationClient,
-        location_repository: repo_location.LocationDatabaseRepository,
+        location_repository: repo_interfaces.LocationRepositoryInterface,
     ):
         self._location_client: LocationClient = location_client
-        self._location_repository: repo_location.LocationDatabaseRepository = (
+        self._location_repository: repo_interfaces.LocationRepositoryInterface = (
             location_repository
         )
 
@@ -89,6 +89,7 @@ class LocationService:
             # Not possible to handle location
             return None
         is_updated: bool = await self._location_repository.update_user_location(
+            user_id,
             models_location.LocationRepositoryModel(
                 user_id=user_id,
                 ip_addr=new_ip_addr,
@@ -98,6 +99,6 @@ class LocationService:
                 latitude=new_location.latitude,
                 longitude=new_location.longitude,
                 tz=new_location.timezone.abbr if new_location.timezone else None,
-            )
+            ),
         )
         return is_updated

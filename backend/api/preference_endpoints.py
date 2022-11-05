@@ -6,7 +6,7 @@ from fastapi_jwt_auth import AuthJWT
 
 from backend import ioc
 from backend.models import models_base, models_preferences
-from backend.repositories import repo_preference as preference_repositories
+from backend.repositories import repo_interfaces
 
 ROUTE_OBJ: fastapi.APIRouter = fastapi.APIRouter()
 
@@ -17,7 +17,7 @@ ROUTE_OBJ: fastapi.APIRouter = fastapi.APIRouter()
 @inject
 async def get_preferences(
     user_id: int,
-    preferences_repo: preference_repositories.PreferenceDatabaseRepository = fastapi.Depends(
+    preferences_repo: repo_interfaces.PreferenceRepositoryInterface = fastapi.Depends(
         Provide[ioc.IOCContainer.preferences_repository]
     ),
     authorize: AuthJWT = fastapi.Depends(),
@@ -40,7 +40,7 @@ async def get_preferences(
 async def update_preferences(
     user_id: int,
     new_preferences: models_preferences.UserPreferences,
-    preferences_repo: preference_repositories.PreferenceDatabaseRepository = fastapi.Depends(
+    preferences_repo: repo_interfaces.PreferenceRepositoryInterface = fastapi.Depends(
         Provide[ioc.IOCContainer.preferences_repository]
     ),
     authorize: AuthJWT = fastapi.Depends(),

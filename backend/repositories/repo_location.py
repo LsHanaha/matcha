@@ -3,11 +3,12 @@
 from databases.interfaces import Record
 
 from backend.models import models_location
-from backend.repositories import BaseAsyncRepository, interfaces, postgres_reconnect
+from backend.repositories import (BaseAsyncRepository, postgres_reconnect,
+                                  repo_interfaces)
 
 
 class LocationDatabaseRepository(
-    BaseAsyncRepository, interfaces.LocationRepositoryInterface
+    BaseAsyncRepository, repo_interfaces.LocationRepositoryInterface
 ):
     """User location repository."""
 

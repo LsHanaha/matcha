@@ -6,7 +6,7 @@ from fastapi_jwt_auth import AuthJWT
 
 from backend import ioc
 from backend.models import models_base, models_user
-from backend.repositories import repo_profile as profile_repositories
+from backend.repositories import repo_interfaces
 
 ROUTER_OBJ: fastapi.APIRouter = fastapi.APIRouter()
 
@@ -15,7 +15,7 @@ ROUTER_OBJ: fastapi.APIRouter = fastapi.APIRouter()
 @inject
 async def get_profile(
     user_id: int,
-    profile_repository: profile_repositories.UserProfileDatabaseRepository = fastapi.Depends(
+    profile_repository: repo_interfaces.ProfileRepositoryInterface = fastapi.Depends(
         Provide[ioc.IOCContainer.profile_repository]
     ),
     authorize: AuthJWT = fastapi.Depends(),
@@ -38,7 +38,7 @@ async def get_profile(
 async def update_profile(
     user_id: int,
     profile_data: models_user.UserProfile,
-    profile_repository: profile_repositories.UserProfileDatabaseRepository = fastapi.Depends(
+    profile_repository: repo_interfaces.ProfileRepositoryInterface = fastapi.Depends(
         Provide[ioc.IOCContainer.profile_repository]
     ),
     authorize: AuthJWT = fastapi.Depends(),

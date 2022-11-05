@@ -39,6 +39,13 @@ class UserProfile(pydantic.BaseModel):
     interests: list[int]
 
 
+class Interests(pydantic.BaseModel):
+    """Model for interests."""
+
+    id: int
+    name: str
+
+
 class LoginResponse(pydantic.BaseModel):
     """Return tokens after authentication."""
 

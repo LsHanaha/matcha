@@ -2,15 +2,14 @@
 
 from abc import ABC, abstractmethod
 
-from backend.models import models_location, models_preferences
-from backend.models import models_user as user_models
+from backend.models import models_location, models_preferences, models_user
 
 
 class AuthRepositoryInterface(ABC):
     """Interface for auth purpose."""
 
     @abstractmethod
-    async def create_user(self, user: user_models.UserAuth) -> bool:
+    async def create_user(self, user: models_user.UserAuth) -> bool:
         """Create new user."""
 
     @abstractmethod
@@ -19,8 +18,11 @@ class AuthRepositoryInterface(ABC):
 
     @abstractmethod
     async def collect_user_from_db(
-        self, username: str | None, user_id: int | None, email: str | None
-    ) -> user_models.UserAuth | None:
+        self,
+        username: str | None = None,
+        user_id: int | None = None,
+        email: str | None = None,
+    ) -> models_user.UserAuth | None:
         """Collect user by unique parameter."""
 
     @abstractmethod
@@ -32,11 +34,11 @@ class ProfileRepositoryInterface(ABC):
     """Interface for user profile."""
 
     @abstractmethod
-    async def collect_user_profile(self, user_id: int) -> user_models.UserProfile:
+    async def collect_user_profile(self, user_id: int) -> models_user.UserProfile:
         """Collect =profile for a user."""
 
     @abstractmethod
-    async def update_user_profile(self, user_profile: user_models.UserProfile) -> bool:
+    async def update_user_profile(self, user_profile: models_user.UserProfile) -> bool:
         """Update profile for a user."""
 
 
@@ -70,3 +72,21 @@ class PreferenceRepositoryInterface(ABC):
         self, new_preferences: models_preferences.UserPreferences
     ) -> bool:
         """Update user location."""
+
+
+class InterestsRepositoryInterface(ABC):
+    """Interface for user repository."""
+
+    @abstractmethod
+    async def collect_all_interests(self) -> list[models_user.Interests]:
+        """Collect all interests."""
+
+    @abstractmethod
+    async def search_interests_by_name(
+        self, pattern: str
+    ) -> list[models_user.Interests]:
+        """Return result of search for interests by name."""
+
+    @abstractmethod
+    async def insert_new_interest(self, name: str) -> models_user.Interests:
+        """Insert nes interest."""

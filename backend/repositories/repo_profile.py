@@ -3,11 +3,15 @@
 from databases.interfaces import Record
 
 from backend.models import models_user as user_models
-from backend.repositories import BaseAsyncRepository, interfaces, postgres_reconnect
+from backend.repositories import (
+    BaseAsyncRepository,
+    postgres_reconnect,
+    repo_interfaces,
+)
 
 
 class UserProfileDatabaseRepository(
-    BaseAsyncRepository, interfaces.ProfileRepositoryInterface
+    BaseAsyncRepository, repo_interfaces.ProfileRepositoryInterface
 ):
     """Class for interacting with profiles table for user."""
 
