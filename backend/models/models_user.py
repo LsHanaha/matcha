@@ -61,3 +61,10 @@ class LoginResponse(pydantic.BaseModel):
 
     access_token: str
     refresh_token: str
+
+
+class UserAvatar(pydantic.BaseModel):
+    """Model for user avatar."""
+
+    name: str
+    file: bytes

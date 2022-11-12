@@ -22,7 +22,7 @@ async def collect_all_interests(
     authorize: AuthJWT = fastapi.Depends(),
 ) -> list[models_user.Interests]:
     """Collect all interests."""
-    authorize.jwt_required()
+    # authorize.jwt_required()
     return await db_connection.collect_all_interests()
 
 

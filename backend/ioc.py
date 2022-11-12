@@ -11,11 +11,15 @@ from backend.repositories.repo_interests import InterestsDatabaseRepository
 from backend.repositories.repo_location import LocationDatabaseRepository
 from backend.repositories.repo_preference import PreferenceDatabaseRepository
 from backend.repositories.repo_profile import UserProfileDatabaseRepository
+from backend.repositories_redis.redis_avatars import UsersAvatarsRedisRepo
 
 
 class IOCContainer(containers.DeclarativeContainer):
     """God-like container for maintaining dependencies."""
 
+    redis_connection: providers.Resource[resources.RedisResource] = providers.Resource(
+        resources.RedisResource
+    )
     database_connection: providers.Resource[
         resources.DatabaseResource
     ] = providers.Resource(resources.DatabaseResource)
@@ -55,4 +59,8 @@ class IOCContainer(containers.DeclarativeContainer):
         locations.LocationService,
         location_client=location_client,
         location_repository=location_repository,
+    )
+
+    avatars_service: providers.Resource[UsersAvatarsRedisRepo] = providers.Resource(
+        UsersAvatarsRedisRepo, redis_connection=redis_connection
     )

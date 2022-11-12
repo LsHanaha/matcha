@@ -7,6 +7,7 @@ from fastapi_jwt_auth import AuthJWT
 from backend import ioc
 from backend.models import models_base, models_user
 from backend.repositories import repo_interfaces
+from backend.repositories_redis.redis_avatars import UsersAvatarsRedisRepo
 
 ROUTER_OBJ: fastapi.APIRouter = fastapi.APIRouter()
 
@@ -50,10 +51,60 @@ async def update_profile(
     return models_base.ResponseModel(status=result)
 
 
-@ROUTER_OBJ.post("/store-avatars/", response_model=models_base.ResponseModel)
+@ROUTER_OBJ.post("/avatars-store/", response_model=models_base.ResponseModel)
 @inject
 async def store_avatars(
-    user_id: int, file: fastapi.UploadFile, authorize: AuthJWT = fastapi.Depends()
+    user_id: int,
+    files: list[fastapi.UploadFile] = fastapi.File(...),
+    user_avatars_repo: UsersAvatarsRedisRepo = fastapi.Depends(
+        Provide[ioc.IOCContainer.avatars_service]
+    ),
+    # authorize: AuthJWT = fastapi.Depends(),
 ):
     """Method for storing user avatars."""
-    authorize.jwt_required()
+    # authorize.jwt_required()
+
+    new_files: list[models_user.UserAvatar] = [
+        models_user.UserAvatar(name=file.filename, file=file.file.read())
+        for file in files
+    ]
+    await user_avatars_repo.store_avatars(user_id, new_files)
+    return models_base.ResponseModel(status=True)
+
+
+@ROUTER_OBJ.get(
+    "/avatars-retrieve/{user_id}/", response_model=list[models_user.UserAvatar]
+)
+@inject
+async def retrieve_avatars(
+    user_id: int,
+    user_avatars_repo: UsersAvatarsRedisRepo = fastapi.Depends(
+        Provide[ioc.IOCContainer.avatars_service]
+    ),
+    # authorize: AuthJWT = fastapi.Depends(),
+):
+    """Method for retrieving user avatars.
+
+    Actual files is a bytes encoded in base64
+    """
+    # authorize.jwt_required()
+    user_avatars: list[
+        models_user.UserAvatar
+    ] = await user_avatars_repo.collect_avatars(user_id)
+    return user_avatars
+
+
+@ROUTER_OBJ.post("/avatars-delete/", response_model=models_base.ResponseModel)
+@inject
+async def delete_avatar(
+    user_id: int,
+    file_name: str,
+    user_avatars_repo: UsersAvatarsRedisRepo = fastapi.Depends(
+        Provide[ioc.IOCContainer.avatars_service]
+    ),
+    # authorize: AuthJWT = fastapi.Depends(),
+):
+    """Method for removing avatar for a user."""
+    # authorize.jwt_required()
+    result = await user_avatars_repo.delete_avatar(user_id, file_name)
+    return models_base.ResponseModel(status=result)

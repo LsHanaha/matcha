@@ -1,5 +1,6 @@
 """Resources for connecting to different targets."""
 import json
+import typing
 
 import asyncpg
 import settings
@@ -31,3 +32,20 @@ class DatabaseResource(resources.AsyncResource):
     async def shutdown(self, resource: Database) -> None:
         """Close db connection."""
         await resource.disconnect()
+
+
+class RedisResource(resources.AsyncResource):
+    """Resource for redis connections."""
+
+    ENCODING: typing.Final[str] = "utf-8"
+
+    async def init(self, *args: list, **kwargs: dict) -> aioredis.Redis:
+        """Initialize redis connection."""
+        return await aioredis.from_url(
+            f"redis://:{settings.settings_base.redis_password}@"
+            f"{settings.settings_base.redis_host}:{settings.settings_base.redis_port}"
+        )
+
+    async def shutdown(self, resource: aioredis.Redis) -> None:
+        """Shutdown redis connection."""
+        await resource.close()

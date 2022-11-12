@@ -5,8 +5,8 @@ from databases.interfaces import Record
 from backend.models import models_user
 from backend.repositories import (
     BaseAsyncRepository,
-    repo_interfaces,
     postgres_reconnect,
+    repo_interfaces,
 )
 
 
@@ -25,7 +25,9 @@ class InterestsDatabaseRepository(
             FROM interests;
             """
         )
-        return [models_user.Interests(dict(rec)) for rec in records]
+        if not records:
+            return []
+        return [models_user.Interests(**dict(rec)) for rec in records]
 
     @postgres_reconnect
     async def search_interests_by_name(

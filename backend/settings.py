@@ -29,6 +29,13 @@ class _BaseSettings(pydantic.BaseSettings):
     max_pool_size: int = 30
     database_max_reties_count: int = 3
 
+    redis_password: str = "password"
+    redis_host: str = "localhost"
+    redis_port: str = "6379"
+    redis_max_reties_count: int = 3
+
+    max_count_of_avatars: int = 5
+
 
 class _JWTSettings(pydantic.BaseSettings):
     """Settings for jwt."""
