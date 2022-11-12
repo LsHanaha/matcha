@@ -5,6 +5,7 @@ from dependency_injector.wiring import Provide, inject
 from fastapi_jwt_auth import AuthJWT
 
 from backend import ioc
+from backend.helpers import update_last_online
 from backend.models import models_base, models_preferences
 from backend.repositories import repo_interfaces
 
@@ -20,6 +21,7 @@ async def get_preferences(
     preferences_repo: repo_interfaces.PreferenceRepositoryInterface = fastapi.Depends(
         Provide[ioc.IOCContainer.preferences_repository]
     ),
+    _=fastapi.Depends(update_last_online),
     authorize: AuthJWT = fastapi.Depends(),
 ) -> models_preferences.UserPreferences:
     """Get user's preferences."""
@@ -43,6 +45,7 @@ async def update_preferences(
     preferences_repo: repo_interfaces.PreferenceRepositoryInterface = fastapi.Depends(
         Provide[ioc.IOCContainer.preferences_repository]
     ),
+    _=fastapi.Depends(update_last_online),
     authorize: AuthJWT = fastapi.Depends(),
 ) -> models_base.ResponseModel:
     """Update user's preferences."""

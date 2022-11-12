@@ -64,18 +64,18 @@ class LocationService:
             location_repository
         )
 
-    async def collect_user_location(
+    async def get_user_location(
         self, user_id: int
     ) -> models_location.LocationRepositoryModel | None:
         """Get user location from database."""
         return await self._location_repository.collect_user_location(user_id)
 
-    async def collect_and_store_user_location(
+    async def update_user_location(
         self,
         user_id: int,
         new_ip_addr: str,
     ) -> None | bool:
-        """Collect user location by it's ip."""
+        """Collect user location by his ip."""
         location_in_database: models_location.LocationRepositoryModel = (
             await self._location_repository.collect_user_location(user_id)
         )

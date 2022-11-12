@@ -1,5 +1,7 @@
 """Repository for user profile."""
 
+import datetime
+
 from databases.interfaces import Record
 
 from backend.models import models_user as user_models
@@ -41,10 +43,22 @@ class UserProfileDatabaseRepository(
             UPDATE profiles
             SET first_name=:first_name, last_name:=last_name, birthday=:birthday,
                 gender=:gender, sexual_preferences=sexual_preferences, biography=:biography,
-                main_photo_name=:main_photo_name
+                main_photo_name=:main_photo_name, city=:city
             WHERE user_id=:user_id
             RETURNING 1;
             """,
             {**user_profile.dict()},
         )
         return result
+
+    @postgres_reconnect
+    async def update_last_online(self, user_id: int) -> None:
+        """Update last_online field for user."""
+        await self.database_connection.execute(
+            """
+            UPDATE profiles
+            SET last_online=:last_online
+            WHERE user_id=:user_id;
+            """,
+            {"user_id": user_id, "last_online": datetime.datetime.now()},
+        )

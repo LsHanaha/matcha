@@ -5,6 +5,7 @@ import asyncpg
 import settings
 from databases import Database
 from dependency_injector import resources
+from redis import asyncio as aioredis
 
 
 class DatabaseResource(resources.AsyncResource):

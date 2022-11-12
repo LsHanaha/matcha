@@ -5,6 +5,7 @@ from dependency_injector.wiring import Provide, inject
 from fastapi_jwt_auth import AuthJWT
 
 from backend import ioc
+from backend.helpers import update_last_online
 from backend.models import models_user
 from backend.repositories import repo_interfaces
 
@@ -17,6 +18,7 @@ async def collect_all_interests(
     db_connection: repo_interfaces.InterestsRepositoryInterface = fastapi.Depends(
         Provide[ioc.IOCContainer.interests_repository]
     ),
+    _=fastapi.Depends(update_last_online),
     authorize: AuthJWT = fastapi.Depends(),
 ) -> list[models_user.Interests]:
     """Collect all interests."""
@@ -45,6 +47,7 @@ async def add_new_interest(
     db_connection: repo_interfaces.InterestsRepositoryInterface = fastapi.Depends(
         Provide[ioc.IOCContainer.interests_repository]
     ),
+    _=fastapi.Depends(update_last_online),
     authorize: AuthJWT = fastapi.Depends(),
 ) -> models_user.Interests:
     """Add new interest."""

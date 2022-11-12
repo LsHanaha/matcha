@@ -48,3 +48,12 @@ async def update_profile(
     profile_data.user_id = user_id
     result: bool = await profile_repository.update_user_profile(profile_data)
     return models_base.ResponseModel(status=result)
+
+
+@ROUTER_OBJ.post("/store-avatars/", response_model=models_base.ResponseModel)
+@inject
+async def store_avatars(
+    user_id: int, file: fastapi.UploadFile, authorize: AuthJWT = fastapi.Depends()
+):
+    """Method for storing user avatars."""
+    authorize.jwt_required()

@@ -35,6 +35,7 @@ def upgrade() -> None:
         sa.Column("fame_rating", sa.Integer, default=0),
         sa.Column("last_online", sa.DateTime, nullable=True),
         sa.Column("interests", sa.ARRAY(sa.Integer, dimensions=2), nullable=True),
+        sa.Column("city", sa.String, nullable=False),
     )
 
 

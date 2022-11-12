@@ -6,8 +6,10 @@ from fastapi_jwt_auth import AuthJWT
 from fastapi_jwt_auth.exceptions import AuthJWTException
 
 from backend import ioc
+from backend.api.locations import LocationService
 from backend.auth import auth_handle_mail, auth_tokens
 from backend.auth.__main__ import check_is_password_valid
+from backend.helpers import update_last_online
 from backend.models import models_user as user_models
 from backend.repositories import repo_interfaces
 
@@ -41,11 +43,17 @@ async def create_user(
 
 @ROUTER_OBJ.post("/login/", response_model=user_models.LoginResponse)
 @inject
-async def validate_user(
+async def login_user(
     user: user_models.UserLogin,
+    background_tasks: fastapi.BackgroundTasks,
+    request: fastapi.Request,
     db_repository: repo_interfaces.AuthRepositoryInterface = fastapi.Depends(
         Provide[ioc.IOCContainer.auth_repository]
     ),
+    location_service: LocationService = fastapi.Depends(
+        Provide[ioc.IOCContainer.location_service]
+    ),
+    _=fastapi.Depends(update_last_online),
     authorize: AuthJWT = fastapi.Depends(),
 ) -> user_models.LoginResponse:
     """Validate user and return tokens."""
@@ -63,6 +71,9 @@ async def validate_user(
         )
     if not check_is_password_valid(user.password, user_in_db.password):
         raise AuthJWTException("Wrong username or password")
+    background_tasks.add_task(
+        location_service.update_user_location, user_in_db.id, request.client.host
+    )
     return user_models.LoginResponse(
         access_token=auth_tokens.create_access_token(authorize, user_in_db.id),
         refresh_token=auth_tokens.create_refresh_token(authorize, user_in_db.id),
@@ -91,7 +102,7 @@ async def refresh_access_token(
     db_repository: repo_interfaces.AuthRepositoryInterface = fastapi.Depends(
         Provide[ioc.IOCContainer.auth_repository]
     ),
-    authorize: AuthJWT = fastapi.Depends(),
+    authorize: AuthJWT = fastapi.Depends(AuthJWT),
 ) -> dict[str, str]:
     """Activate user."""
 

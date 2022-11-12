@@ -37,6 +37,16 @@ class UserProfile(pydantic.BaseModel):
     biography: str | None
     main_photo_name: str
     interests: list[int]
+    city: str
+
+    def _is_profile_filled(self):
+        """Check is user fill his/her profile."""
+        for key, val in self.dict().items():
+            if not val:
+                if key in (self.biography, self.user_id):
+                    continue
+                return False
+        return True
 
 
 class Interests(pydantic.BaseModel):

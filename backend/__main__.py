@@ -60,14 +60,13 @@ APP_OBJ.include_router(
 )
 
 
-if settings_base.debug:
-    APP_OBJ.add_middleware(
-        CORSMiddleware,
-        allow_origins=["*"],
-        allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"],
-    )
+APP_OBJ.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 if __name__ == "__main__":
@@ -75,4 +74,7 @@ if __name__ == "__main__":
         "__main__:APP_OBJ",
         host="0.0.0.0",
         port=8888,
+        proxy_headers=True,
+        reload=True,
+        debug=True,
     )

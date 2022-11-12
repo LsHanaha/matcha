@@ -41,6 +41,10 @@ class ProfileRepositoryInterface(ABC):
     async def update_user_profile(self, user_profile: models_user.UserProfile) -> bool:
         """Update profile for a user."""
 
+    @abstractmethod
+    async def update_last_online(self, user_id: int):
+        """Update last_online field for user."""
+
 
 class LocationRepositoryInterface(ABC):
     """Interface for user location."""
