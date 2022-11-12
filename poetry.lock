@@ -1,17 +1,14 @@
 [[package]]
-name = "aioredis"
-version = "2.0.1"
-description = "asyncio (PEP 3156) Redis support"
+name = "aiosmtplib"
+version = "1.1.7"
+description = "asyncio SMTP client"
 category = "main"
 optional = false
-python-versions = ">=3.6"
-
-[package.dependencies]
-async-timeout = "*"
-typing-extensions = "*"
+python-versions = ">=3.5.2,<4.0.0"
 
 [package.extras]
-hiredis = ["hiredis (>=1.0)"]
+docs = ["jinja2 (>=2.0,<3.1)", "sphinx (>=2,<4)", "sphinx_autodoc_typehints (>=1.7.0,<2.0.0)"]
+uvloop = ["uvloop (>=0.13,<0.15)"]
 
 [[package]]
 name = "alembic"
@@ -108,6 +105,22 @@ colorama = ["colorama (>=0.4.3)"]
 d = ["aiohttp (>=3.7.4)"]
 jupyter = ["ipython (>=7.8.0)", "tokenize-rt (>=3.2.0)"]
 uvloop = ["uvloop (>=0.15.2)"]
+
+[[package]]
+name = "blinker"
+version = "1.5"
+description = "Fast, simple object-to-object and broadcast signaling"
+category = "main"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
+
+[[package]]
+name = "certifi"
+version = "2022.9.24"
+description = "Python package for providing Mozilla's CA Bundle."
+category = "main"
+optional = false
+python-versions = ">=3.6"
 
 [[package]]
 name = "click"
@@ -282,6 +295,26 @@ doc = ["markdown-include (>=0.5.1,<0.6.0)", "mkdocs (>=1.1.2,<2.0.0)", "mkdocs-m
 test = ["coveralls (==2.1.2)", "pytest (==6.0.1)", "pytest-cov (==2.10.0)"]
 
 [[package]]
+name = "fastapi-mail"
+version = "1.2.0"
+description = "Simple lightweight mail library for FastApi"
+category = "main"
+optional = false
+python-versions = ">=3.7,<4.0"
+
+[package.dependencies]
+aiosmtplib = ">=1.1.6,<2.0.0"
+blinker = ">=1.5,<2.0"
+email-validator = ">=1.1.3,<2.0.0"
+Jinja2 = ">=3.0.1,<4.0.0"
+pydantic = ">=1.8.2,<2.0.0"
+starlette = "0.20.4"
+
+[package.extras]
+aioredis = ["aioredis[aioredis] (>=2.0.1,<3.0.0)"]
+httpx = ["httpx[httpx] (>=0.23.0,<0.24.0)"]
+
+[[package]]
 name = "fastapi-versioning"
 version = "0.10.0"
 description = "api versioning for fastapi web applications"
@@ -306,11 +339,49 @@ docs = ["Sphinx"]
 
 [[package]]
 name = "h11"
-version = "0.14.0"
+version = "0.12.0"
 description = "A pure-Python, bring-your-own-I/O implementation of HTTP/1.1"
 category = "main"
 optional = false
+python-versions = ">=3.6"
+
+[[package]]
+name = "httpcore"
+version = "0.15.0"
+description = "A minimal low-level HTTP client."
+category = "main"
+optional = false
 python-versions = ">=3.7"
+
+[package.dependencies]
+anyio = ">=3.0.0,<4.0.0"
+certifi = "*"
+h11 = ">=0.11,<0.13"
+sniffio = ">=1.0.0,<2.0.0"
+
+[package.extras]
+http2 = ["h2 (>=3,<5)"]
+socks = ["socksio (>=1.0.0,<2.0.0)"]
+
+[[package]]
+name = "httpx"
+version = "0.23.0"
+description = "The next generation HTTP client."
+category = "main"
+optional = false
+python-versions = ">=3.7"
+
+[package.dependencies]
+certifi = "*"
+httpcore = ">=0.15.0,<0.16.0"
+rfc3986 = {version = ">=1.3,<2", extras = ["idna2008"]}
+sniffio = "*"
+
+[package.extras]
+brotli = ["brotli", "brotlicffi"]
+cli = ["click (>=8.0.0,<9.0.0)", "pygments (>=2.0.0,<3.0.0)", "rich (>=10,<13)"]
+http2 = ["h2 (>=3,<5)"]
+socks = ["socksio (>=1.0.0,<2.0.0)"]
 
 [[package]]
 name = "hypothesis"
@@ -375,6 +446,20 @@ colors = ["colorama (>=0.4.3,<0.5.0)"]
 pipfile_deprecated_finder = ["pipreqs", "requirementslib"]
 plugins = ["setuptools"]
 requirements_deprecated_finder = ["pip-api", "pipreqs"]
+
+[[package]]
+name = "Jinja2"
+version = "3.1.2"
+description = "A very fast and expressive template engine."
+category = "main"
+optional = false
+python-versions = ">=3.7"
+
+[package.dependencies]
+MarkupSafe = ">=2.0"
+
+[package.extras]
+i18n = ["Babel (>=2.7)"]
 
 [[package]]
 name = "lark-parser"
@@ -591,6 +676,17 @@ python-versions = ">=3.6.8"
 diagrams = ["jinja2", "railroad-diagrams"]
 
 [[package]]
+name = "python-multipart"
+version = "0.0.5"
+description = "A streaming multipart parser for Python"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+six = ">=1.4.0"
+
+[[package]]
 name = "pyupgrade"
 version = "3.0.0"
 description = "A tool to automatically upgrade syntax for newer versions."
@@ -625,6 +721,20 @@ packaging = ">=20.4"
 [package.extras]
 hiredis = ["hiredis (>=1.0.0)"]
 ocsp = ["cryptography (>=36.0.1)", "pyopenssl (==20.0.1)", "requests (>=2.26.0)"]
+
+[[package]]
+name = "rfc3986"
+version = "1.5.0"
+description = "Validating URI References per RFC 3986"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+idna = {version = "*", optional = true, markers = "extra == \"idna2008\""}
+
+[package.extras]
+idna2008 = ["idna"]
 
 [[package]]
 name = "six"
@@ -777,12 +887,12 @@ python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,>=2.7"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10"
-content-hash = "329e2a7db65b9da3891f35c30488072566328b0d3399b5ce34e54dd05d3bd694"
+content-hash = "72d8b3afd4cd11463f698b83ae806e6d857351ad7dced95516101d3aa0edac27"
 
 [metadata.files]
-aioredis = [
-    {file = "aioredis-2.0.1-py3-none-any.whl", hash = "sha256:9ac0d0b3b485d293b8ca1987e6de8658d7dafcca1cddfcd1d506cae8cdebfdd6"},
-    {file = "aioredis-2.0.1.tar.gz", hash = "sha256:eaa51aaf993f2d71f54b70527c440437ba65340588afeb786cd87c55c89cd98e"},
+aiosmtplib = [
+    {file = "aiosmtplib-1.1.7-py3-none-any.whl", hash = "sha256:c1403e70fce769643820cb2c5bf0bd4f7ea83a01c60e854c81a6f5d7ccff2656"},
+    {file = "aiosmtplib-1.1.7.tar.gz", hash = "sha256:5810657a86b19476c93fa280c499ca3ef88ce26f2b74dae202989ae06377d107"},
 ]
 alembic = [
     {file = "alembic-1.8.1-py3-none-any.whl", hash = "sha256:0a024d7f2de88d738d7395ff866997314c837be6104e90c5724350313dee4da4"},
@@ -856,6 +966,14 @@ black = [
     {file = "black-22.8.0-cp39-cp39-win_amd64.whl", hash = "sha256:bc4d4123830a2d190e9cc42a2e43570f82ace35c3aeb26a512a2102bce5af7ec"},
     {file = "black-22.8.0-py3-none-any.whl", hash = "sha256:d2c21d439b2baf7aa80d6dd4e3659259be64c6f49dfd0f32091063db0e006db4"},
     {file = "black-22.8.0.tar.gz", hash = "sha256:792f7eb540ba9a17e8656538701d3eb1afcb134e3b45b71f20b25c77a8db7e6e"},
+]
+blinker = [
+    {file = "blinker-1.5-py2.py3-none-any.whl", hash = "sha256:1eb563df6fdbc39eeddc177d953203f99f097e9bf0e2b8f9f3cf18b6ca425e36"},
+    {file = "blinker-1.5.tar.gz", hash = "sha256:923e5e2f69c155f2cc42dafbbd70e16e3fde24d2d4aa2ab72fbe386238892462"},
+]
+certifi = [
+    {file = "certifi-2022.9.24-py3-none-any.whl", hash = "sha256:90c1a32f1d68f940488354e36370f6cca89f0f106db09518524c88d6ed83f382"},
+    {file = "certifi-2022.9.24.tar.gz", hash = "sha256:0d9c601124e5a6ba9712dbc60d9c53c21e34f5f641fe83002317394311bdce14"},
 ]
 click = [
     {file = "click-8.1.3-py3-none-any.whl", hash = "sha256:bb4d8133cb15a609f44e8213d9b391b0809795062913b383c62be0ee95b1db48"},
@@ -938,6 +1056,10 @@ fastapi-jwt-auth = [
     {file = "fastapi-jwt-auth-0.5.0.tar.gz", hash = "sha256:d98068a9e828fe5909a1f338efabc3bb53149f11a9d2d395ab9d90fbb486b375"},
     {file = "fastapi_jwt_auth-0.5.0-py3-none-any.whl", hash = "sha256:43110a227e36f93b99257a1c79e66df8ed3d4c893291db8f9db2686192011f17"},
 ]
+fastapi-mail = [
+    {file = "fastapi_mail-1.2.0-py3-none-any.whl", hash = "sha256:d5a1e64861f0c22a180ad6239fc18cdea10b45f0668a6234802046181f979b41"},
+    {file = "fastapi_mail-1.2.0.tar.gz", hash = "sha256:6645d76fe695012175a88155ed9011e89b45318c127fa747ebd853c8203b0360"},
+]
 fastapi-versioning = [
     {file = "fastapi_versioning-0.10.0-py3-none-any.whl", hash = "sha256:afe0ad7a56383b884c399341260bd3301b40e5a1cf9f6dc4211a349489087e1b"},
     {file = "fastapi_versioning-0.10.0.tar.gz", hash = "sha256:5c18ea4e9ae1afd39c9e5bed1c240bf1cabdc75217579af78249ccb651c7b5b5"},
@@ -999,8 +1121,16 @@ greenlet = [
     {file = "greenlet-1.1.3.tar.gz", hash = "sha256:bcb6c6dd1d6be6d38d6db283747d07fda089ff8c559a835236560a4410340455"},
 ]
 h11 = [
-    {file = "h11-0.14.0-py3-none-any.whl", hash = "sha256:e3fe4ac4b851c468cc8363d500db52c2ead036020723024a109d37346efaa761"},
-    {file = "h11-0.14.0.tar.gz", hash = "sha256:8f19fbbe99e72420ff35c00b27a34cb9937e902a8b810e2c88300c6f0a3b699d"},
+    {file = "h11-0.12.0-py3-none-any.whl", hash = "sha256:36a3cb8c0a032f56e2da7084577878a035d3b61d104230d4bd49c0c6b555a9c6"},
+    {file = "h11-0.12.0.tar.gz", hash = "sha256:47222cb6067e4a307d535814917cd98fd0a57b6788ce715755fa2b6c28b56042"},
+]
+httpcore = [
+    {file = "httpcore-0.15.0-py3-none-any.whl", hash = "sha256:1105b8b73c025f23ff7c36468e4432226cbb959176eab66864b8e31c4ee27fa6"},
+    {file = "httpcore-0.15.0.tar.gz", hash = "sha256:18b68ab86a3ccf3e7dc0f43598eaddcf472b602aba29f9aa6ab85fe2ada3980b"},
+]
+httpx = [
+    {file = "httpx-0.23.0-py3-none-any.whl", hash = "sha256:42974f577483e1e932c3cdc3cd2303e883cbfba17fe228b0f63589764d7b9c4b"},
+    {file = "httpx-0.23.0.tar.gz", hash = "sha256:f28eac771ec9eb4866d3fb4ab65abd42d38c424739e80c08d8d20570de60b0ef"},
 ]
 hypothesis = [
     {file = "hypothesis-6.56.1-py3-none-any.whl", hash = "sha256:df01b518d3c79c34ca5a15462af5407d1e73dd2d7003d374299dddb195aa155d"},
@@ -1017,6 +1147,10 @@ idna = [
 isort = [
     {file = "isort-5.10.1-py3-none-any.whl", hash = "sha256:6f62d78e2f89b4500b080fe3a81690850cd254227f27f75c3a0c491a1f351ba7"},
     {file = "isort-5.10.1.tar.gz", hash = "sha256:e8443a5e7a020e9d7f97f1d7d9cd17c88bcb3bc7e218bf9cf5095fe550be2951"},
+]
+Jinja2 = [
+    {file = "Jinja2-3.1.2-py3-none-any.whl", hash = "sha256:6088930bfe239f0e6710546ab9c19c9ef35e29792895fed6e6e31a023a182a61"},
+    {file = "Jinja2-3.1.2.tar.gz", hash = "sha256:31351a702a408a9e7595a8fc6150fc3f43bb6bf7e319770cbc0db9df9437e852"},
 ]
 lark-parser = [
     {file = "lark-parser-0.12.0.tar.gz", hash = "sha256:15967db1f1214013dca65b1180745047b9be457d73da224fcda3d9dd4e96a138"},
@@ -1233,6 +1367,9 @@ pyparsing = [
     {file = "pyparsing-3.0.9-py3-none-any.whl", hash = "sha256:5026bae9a10eeaefb61dab2f09052b9f4307d44aee4eda64b309723d8d206bbc"},
     {file = "pyparsing-3.0.9.tar.gz", hash = "sha256:2b020ecf7d21b687f219b71ecad3631f644a47f01403fa1d1036b0c6416d70fb"},
 ]
+python-multipart = [
+    {file = "python-multipart-0.0.5.tar.gz", hash = "sha256:f7bb5f611fc600d15fa47b3974c8aa16e93724513b49b5f95c81e6624c83fa43"},
+]
 pyupgrade = [
     {file = "pyupgrade-3.0.0-py2.py3-none-any.whl", hash = "sha256:f9ba6cb58713e7249f4f0486e425969618e953062a5fc805da9d21602a2d1441"},
     {file = "pyupgrade-3.0.0.tar.gz", hash = "sha256:6ec1e2762d887cab94a5714b2ea7e944843d8c2de36c449d443e52ffac8ab14f"},
@@ -1282,6 +1419,10 @@ PyYAML = [
 redis = [
     {file = "redis-4.3.4-py3-none-any.whl", hash = "sha256:a52d5694c9eb4292770084fa8c863f79367ca19884b329ab574d5cb2036b3e54"},
     {file = "redis-4.3.4.tar.gz", hash = "sha256:ddf27071df4adf3821c4f2ca59d67525c3a82e5f268bed97b813cb4fabf87880"},
+]
+rfc3986 = [
+    {file = "rfc3986-1.5.0-py2.py3-none-any.whl", hash = "sha256:a86d6e1f5b1dc238b218b012df0aa79409667bb209e58da56d0b94704e712a97"},
+    {file = "rfc3986-1.5.0.tar.gz", hash = "sha256:270aaf10d87d0d4e095063c65bf3ddbc6ee3d0b226328ce21e036f946e421835"},
 ]
 six = [
     {file = "six-1.16.0-py2.py3-none-any.whl", hash = "sha256:8abb2f1d86890a2dfb989f9a77cfcfd3e47c2a354b01111771326f8aa26e0254"},

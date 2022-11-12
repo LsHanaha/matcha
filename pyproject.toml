@@ -19,13 +19,15 @@ loguru = "^0.6.0"
 asyncpg = "^0.26.0"
 databases = "^0.6.1"
 fastapi-jwt-auth = "^0.5.0"
-aioredis = "^2.0.1"
 redis = "^4.3.4"
 backoff = "^2.2.1"
 psycopg2 = "^2.9.4"
 orjson = "^3.8.0"
 passlib = "^1.7.4"
 pydantic = {extras = ["email"], version = "^1.10.2"}
+httpx = "^0.23.0"
+fastapi-mail = "^1.2.0"
+python-multipart = "^0.0.5"
 
 [tool.poetry.group.dev.dependencies]
 pybetter = "^0.4.1"
