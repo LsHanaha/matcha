@@ -133,3 +133,9 @@ class MatchaRepoInterface(ABC):
         self, user_id_first: int, user_id_second: int
     ) -> models_matcha.VisitedUserModel | None:
         """collect pair for users for checking stuff."""
+
+    @abstractmethod
+    async def visitors(
+        self, target_user_id: int
+    ) -> list[models_matcha.VisitedUserModel]:
+        """Collect visitors for user."""

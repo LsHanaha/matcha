@@ -64,3 +64,23 @@ async def collect_blocked_users(
         models_matcha.VisitedUserModel
     ] = await matcha_db.collect_users_blocked(user_id)
     return result
+
+
+@ROUTER_OBJ.get(
+    "/visited-users/visitors/{target_user_id}",
+    response_model=models_matcha.VisitedUserModel,
+)
+@inject
+async def collect_visits(
+    target_user_id: int,
+    matcha_db: repo_interfaces.MatchaRepoInterface = fastapi.Depends(
+        Provide[ioc.IOCContainer.visited_users_repository]
+    ),
+    authorize: AuthJWT = fastapi.Depends(),
+):
+    """Collect blocked users for specific user."""
+    authorize.jwt_required()
+    result: list[models_matcha.VisitedUserModel] = await matcha_db.visitors(
+        target_user_id
+    )
+    return result

@@ -22,8 +22,8 @@ class VisitedUsersDatabaseRepo(
         """Update visited user."""
         result: bool = await self.database_connection.execute(
             """
-                INSERT INTO blocked_users(user_id, target_user_id, is_liked, 
-                                          is_blocked, is_reported)
+                INSERT INTO visits(user_id, target_user_id, is_liked, 
+                                   is_blocked, is_reported)
                 VALUES (:user_id, :target_user_id, :is_liked, :is_blocked, :is_reported)
                 ON CONFLICT(uc_users_pair_visits)
                 DO UPDATE SET 
@@ -43,7 +43,7 @@ class VisitedUsersDatabaseRepo(
         result: list[Record] = await self.database_connection.execute(
             f"""
                 SELECT *
-                FROM blocked_users
+                FROM visits
                 WHERE user_id=:user_id 
                 {f" AND {query_modifier}" if query_modifier else ""};
             """,
@@ -79,7 +79,7 @@ class VisitedUsersDatabaseRepo(
         result: Record = await self.database_connection.execute(
             """
                 SELECT *
-                FROM blocked_users
+                FROM visits
                 WHERE user_id=:user_id  AND target_user_id=:target_user_id
                 LIMIT 1;
             """,
@@ -88,3 +88,20 @@ class VisitedUsersDatabaseRepo(
         if not result:
             return None
         return models_matcha.VisitedUserModel(**dict(result))
+
+    @postgres_reconnect
+    async def visitors(
+        self, target_user_id: int
+    ) -> list[models_matcha.VisitedUserModel]:
+        """Collect visitors fof user."""
+        result: list[Record] = await self.database_connection.execute(
+            """
+            SELECT *
+            FROM visits
+            WHERE target_user_id=:target_user_id;
+            """,
+            {"target_user_id": target_user_id},
+        )
+        if not result:
+            return []
+        return [models_matcha.VisitedUserModel(**dict(row)) for row in result]
