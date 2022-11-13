@@ -105,11 +105,31 @@ class MatchaRepoInterface(ABC):
     """Interface for core matcha queries."""
 
     @abstractmethod
-    async def block_user(self, reported: models_matcha.BlockUserModel) -> bool:
-        """Block or report user."""
+    async def update_visited_users(
+        self, visited_user: models_matcha.VisitedUserModel
+    ) -> bool:
+        """Store visited user."""
 
     @abstractmethod
-    async def collect_blocked_users(
-        self, user_id
-    ) -> list[models_matcha.BlockUserModel]:
-        """Collect all blocked users for current user."""
+    async def collect_visited_users(
+        self, user_id: int, query_modifier: str | None = None
+    ) -> list[models_matcha.VisitedUserModel]:
+        """Collect users."""
+
+    @abstractmethod
+    async def collect_users_except_blocked(
+        self, user_id: int
+    ) -> list[models_matcha.VisitedUserModel]:
+        """Collect all visited users except blocked."""
+
+    @abstractmethod
+    async def collect_users_blocked(
+        self, user_id: int
+    ) -> list[models_matcha.VisitedUserModel]:
+        """Collect all blocked users."""
+
+    @abstractmethod
+    async def collect_pair_of_users(
+        self, user_id_first: int, user_id_second: int
+    ) -> models_matcha.VisitedUserModel | None:
+        """collect pair for users for checking stuff."""

@@ -18,17 +18,17 @@ def upgrade() -> None:
     op.create_table(
         "visits",
         sa.Column("id", sa.Integer, primary_key=True),
+        sa.Column("user_id", sa.Integer, sa.ForeignKey("users.id", ondelete="CASCADE")),
         sa.Column(
-            "visited_user_id", sa.Integer, sa.ForeignKey("users.id", ondelete="CASCADE")
-        ),
-        sa.Column(
-            "visitor_user_id", sa.Integer, sa.ForeignKey("users.id", ondelete="CASCADE")
+            "target_user_id", sa.Integer, sa.ForeignKey("users.id", ondelete="CASCADE")
         ),
         sa.Column("last_visit_time", sa.DateTime, onupdate=sa.func.current_timestamp()),
-        sa.Column("is_match", sa.Boolean, default=False),
+        sa.Column("is_liked", sa.Boolean, default=False),
+        sa.Column("is_blocked", sa.Boolean, default=False),
+        sa.Column("is_reported", sa.Boolean, default=False),
     )
     op.create_unique_constraint(
-        "uc_users_pair", "visits", ["visited_user_id", "visitor_user_id"]
+        "uc_users_pair_visits", "visits", ["user_id", "target_user_id"]
     )
 
 
