@@ -2,7 +2,12 @@
 
 from abc import ABC, abstractmethod
 
-from backend.models import models_location, models_preferences, models_user
+from backend.models import (
+    models_location,
+    models_matcha,
+    models_preferences,
+    models_user,
+)
 
 
 class AuthRepositoryInterface(ABC):
@@ -94,3 +99,17 @@ class InterestsRepositoryInterface(ABC):
     @abstractmethod
     async def insert_new_interest(self, name: str) -> models_user.Interests:
         """Insert nes interest."""
+
+
+class MatchaRepoInterface(ABC):
+    """Interface for core matcha queries."""
+
+    @abstractmethod
+    async def block_user(self, reported: models_matcha.BlockUserModel) -> bool:
+        """Block or report user."""
+
+    @abstractmethod
+    async def collect_blocked_users(
+        self, user_id
+    ) -> list[models_matcha.BlockUserModel]:
+        """Collect all blocked users for current user."""

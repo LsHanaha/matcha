@@ -8,6 +8,7 @@ from backend import ioc
 from backend.api import (
     error_handlers,
     interests_endpoints,
+    mathca_endpoints,
     preference_endpoints,
     profile_endpoints,
 )
@@ -28,6 +29,7 @@ async def startup():
             profile_endpoints,
             preference_endpoints,
             interests_endpoints,
+            mathca_endpoints,
         ]
     )
 
@@ -58,6 +60,7 @@ APP_OBJ.include_router(
 APP_OBJ.include_router(
     interests_endpoints.ROUTER_OBJ, prefix="/interests", tags=["interests"]
 )
+APP_OBJ.include_router(mathca_endpoints.ROUTER_OBJ, prefix="/matcha", tags=["Core API"])
 
 
 APP_OBJ.add_middleware(

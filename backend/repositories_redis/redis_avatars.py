@@ -24,7 +24,7 @@ class UsersAvatarsRedisRepo(BaseRedisRepository):
         self, user_id: int, files: list[models_user.UserAvatar]
     ) -> None:
         """Store avatars."""
-        stored_avatars_names_b: list[bytes] = await self._redis_connection.hkeys(
+        stored_avatars_names_b: list[bytes] = await self.redis_connection.hkeys(
             self._create_user_avatars_key(user_id)
         )
         stored_avatars_names = [name.decode() for name in stored_avatars_names_b]
@@ -37,7 +37,7 @@ class UsersAvatarsRedisRepo(BaseRedisRepository):
         for file in files:
             if file.name in stored_avatars_names:
                 continue
-            await self._redis_connection.hset(
+            await self.redis_connection.hset(
                 self._create_user_avatars_key(user_id), file.name, file.file
             )
         return
@@ -45,7 +45,7 @@ class UsersAvatarsRedisRepo(BaseRedisRepository):
     @redis_reconnect
     async def collect_avatars(self, user_id: int) -> list[models_user.UserAvatar]:
         """Get avatars for user."""
-        user_avatars: dict = await self._redis_connection.hgetall(
+        user_avatars: dict = await self.redis_connection.hgetall(
             self._create_user_avatars_key(user_id)
         )
         if not user_avatars:
@@ -62,7 +62,7 @@ class UsersAvatarsRedisRepo(BaseRedisRepository):
     @redis_reconnect
     async def delete_avatar(self, user_id, file_name: str) -> bool:
         """Delete avatar."""
-        await self._redis_connection.hdel(
+        await self.redis_connection.hdel(
             self._create_user_avatars_key(user_id), file_name
         )
         return True

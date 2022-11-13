@@ -13,7 +13,7 @@ class BaseRedisRepository:
     """Common for all redis instances."""
 
     def __init__(self, redis_connection: aioredis.Redis):
-        self._redis_connection: aioredis.Redis = redis_connection
+        self.redis_connection: aioredis.Redis = redis_connection
 
 
 def redis_reconnect(func: typing.Callable):
