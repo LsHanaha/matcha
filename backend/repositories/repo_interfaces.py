@@ -139,3 +139,21 @@ class MatchaRepoInterface(ABC):
         self, target_user_id: int
     ) -> list[models_matcha.VisitedUserModel]:
         """Collect visitors for user."""
+
+
+class MatchedUsersRepoInterface(ABC):
+    """Matched users database interface."""
+
+    @abstractmethod
+    async def set_users_pair(self, first_user_id: int, second_user_id: int) -> bool:
+        """Set a new pair of matched users."""
+
+    @abstractmethod
+    async def delete_users_pair(self, first_user_id: int, second_user_id: int) -> bool:
+        """Delete a pair of matched users."""
+
+    @abstractmethod
+    async def collect_pair_of_users(
+        self, first_user_id: int, second_user_id: int
+    ) -> models_matcha.MatchedUsers | None:
+        """Collect pair of users."""

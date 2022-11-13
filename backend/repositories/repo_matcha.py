@@ -105,3 +105,51 @@ class VisitedUsersDatabaseRepo(
         if not result:
             return []
         return [models_matcha.VisitedUserModel(**dict(row)) for row in result]
+
+
+class MatchedUsersRepoDatabase(
+    BaseAsyncRepository, repo_interfaces.MatchedUsersRepoInterface
+):
+    """Repo for handling matched users."""
+
+    @postgres_reconnect
+    async def set_users_pair(self, first_user_id: int, second_user_id: int) -> bool:
+        """Set a new pair of users."""
+
+        await self.database_connection.execute(
+            """
+            INSERT INTO matches(firts_user_id, second_user_id)
+            VALUES(:first_user_id, :second_user_id);
+            """,
+            {"first_user_id": first_user_id, "second_user_id": second_user_id},
+        )
+        return True
+
+    @postgres_reconnect
+    async def delete_users_pair(self, first_user_id: int, second_user_id: int) -> bool:
+        """Remove a matched pair of users."""
+        await self.database_connection.execute(
+            """
+            DELETE FROM matches
+            WHERE first_user_id=:first_user_id AND second_user_id=:second_user_id;
+            """,
+            {"first_user_id": first_user_id, "second_user_id": second_user_id},
+        )
+        return True
+
+    @postgres_reconnect
+    async def collect_pair_of_users(
+        self, first_user_id: int, second_user_id: int
+    ) -> models_matcha.MatchedUsers | None:
+        """Collect pair of users."""
+        result: Record = await self.database_connection.execute(
+            """
+            SELECT *
+            FROM matches
+            WHERE first_user_id=:first_user_id AND second_user_id=:second_user_id;
+            """,
+            {"first_user_id": first_user_id, "second_user_id": second_user_id},
+        )
+        if not result:
+            return None
+        return models_matcha.MatchedUsers(**dict(result))

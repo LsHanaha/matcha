@@ -22,3 +22,11 @@ class VisitedUserModel(pydantic.BaseModel):
             self.is_liked = False
         if self.is_reported:
             self.is_blocked = True
+
+
+class MatchedUsers(pydantic.BaseModel):
+    """Models for matched users."""
+
+    id: int | None
+    first_user_id: int
+    second_user_id: int
