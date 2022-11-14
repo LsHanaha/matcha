@@ -27,15 +27,24 @@ class UsersRelationships:
         self, user_id: int, offset: int = 0, limit: int = 10
     ) -> list[models_user.UserProfile]:
         """Collect profiles of visited users."""
+        return await self._repo_visited.collect_profiles(user_id, offset, limit)
 
-    async def collect_visited_except_banned(self):
-        pass
+    async def collect_visited_except_banned(
+        self, user_id: int, offset: int = 0, limit: int = 10
+    ) -> list[models_user.UserProfile]:
+        """Collect profiles of users except banned."""
+        return await self._repo_visited.collect_profiles_except_blocked(
+            user_id, offset, limit
+        )
 
-    async def collect_visited_banned(self):
-        pass
+    async def collect_visited_banned(
+        self, user_id: int, offset: int = 0, limit: int = 10
+    ) -> list[models_user.UserProfile]:
+        """Collect profiles of users that banned."""
+        return await self._repo_visited.collect_profiles_blocked(user_id, offset, limit)
 
     async def update_visited(self):
-        pass
+        """Update visited users."""
 
     async def check_is_match(self):
         pass

@@ -36,6 +36,26 @@ class VisitedUsersDatabaseRepo(
         return result
 
     @postgres_reconnect
+    async def change_is_match(
+        self, user_id: int, target_user_id: int, new_status: bool
+    ) -> bool:
+        """Update is_match field."""
+        await self.database_connection.execute(
+            """
+            UPDATE visits
+            SET (is_match=:is_match)
+            WHERE (user_id=:user_id AND target_user_id=:taget_user_id) 
+                  OR (user_id=:target_user_id AND target_user_id=:user_id);  
+            """,
+            {
+                "is_match": new_status,
+                "user_id": user_id,
+                "target_user_id": target_user_id,
+            },
+        )
+        return True
+
+    @postgres_reconnect
     async def collect_visited_users(
         self, user_id: int, query_modifier: str | None = None
     ) -> list[models_matcha.VisitedUserModel]:
@@ -107,7 +127,7 @@ class VisitedUsersDatabaseRepo(
         return [models_matcha.VisitedUserModel(**dict(row)) for row in result]
 
     @postgres_reconnect
-    async def _collect_profiles(
+    async def collect_profiles(
         self, user_id: int, offset: int, limit: int, query_modifiers: str | None = None
     ) -> list[models_user.UserProfile]:
         """Collect profiles of visited users."""

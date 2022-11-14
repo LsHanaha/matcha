@@ -26,6 +26,7 @@ def upgrade() -> None:
         sa.Column("is_liked", sa.Boolean, default=False),
         sa.Column("is_blocked", sa.Boolean, default=False),
         sa.Column("is_reported", sa.Boolean, default=False),
+        sa.Column("is_match", sa.Boolean, default=False),
     )
     op.create_unique_constraint(
         "uc_users_pair_visits", "visits", ["user_id", "target_user_id"]

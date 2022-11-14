@@ -111,6 +111,12 @@ class VisitsRepoInterface(ABC):
         """Store visited user."""
 
     @abstractmethod
+    async def change_is_match(
+        self, user_id: int, target_user_id: int, new_status: bool
+    ) -> bool:
+        """Change is match parameter for user."""
+
+    @abstractmethod
     async def collect_visited_users(
         self, user_id: int, query_modifier: str | None = None
     ) -> list[models_matcha.VisitedUserModel]:
@@ -141,7 +147,7 @@ class VisitsRepoInterface(ABC):
         """Collect visitors for user."""
 
     @abstractmethod
-    async def _collect_profiles(
+    async def collect_profiles(
         self, user_id: int, offset: int, limit: int, query_modifiers: str | None = None
     ) -> list[models_user.UserProfile]:
         """Collect profiles of visited users."""
