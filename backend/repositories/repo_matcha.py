@@ -2,7 +2,7 @@
 
 from databases.interfaces import Record
 
-from backend.models import models_matcha
+from backend.models import models_matcha, models_user
 from backend.repositories import (
     BaseAsyncRepository,
     postgres_reconnect,
@@ -11,7 +11,7 @@ from backend.repositories import (
 
 
 class VisitedUsersDatabaseRepo(
-    BaseAsyncRepository, repo_interfaces.MatchaRepoInterface
+    BaseAsyncRepository, repo_interfaces.VisitsRepoInterface
 ):
     """Repo for handle visits for users."""
 
@@ -68,7 +68,7 @@ class VisitedUsersDatabaseRepo(
     ) -> list[models_matcha.VisitedUserModel]:
         """Collect blocked users."""
         return await self.collect_visited_users(
-            user_id, "is_blocked == true and is_reported == true"
+            user_id, "is_blocked=true and is_reported=true"
         )
 
     @postgres_reconnect
@@ -105,6 +105,43 @@ class VisitedUsersDatabaseRepo(
         if not result:
             return []
         return [models_matcha.VisitedUserModel(**dict(row)) for row in result]
+
+    @postgres_reconnect
+    async def _collect_profiles(
+        self, user_id: int, offset: int, limit: int, query_modifiers: str | None = None
+    ) -> list[models_user.UserProfile]:
+        """Collect profiles of visited users."""
+        result: list[Record] = await self.database_connection.execute(
+            f"""
+            SELECT p.user_id, p.first_name, p.birthday, p.gender, p.sexual_orientation,
+                   p.main_photo_name, p.interests, p.city
+            FROM profiles as p
+            JOIN visits as v
+            ON v.user_id = p.user_id
+            WHERE v.user_id=:user_id {f"AND {query_modifiers}" if query_modifiers else ""}
+            ORDER BY p.last_name, p.first_name
+            OFFSET :offset
+            LIMIT :limit;
+            """,
+            {"user_id": user_id, "offset": offset, "limit": limit},
+        )
+        if not result:
+            return []
+        return [models_user.UserProfile(**dict(row)) for row in result]
+
+    @postgres_reconnect
+    async def collect_profiles_except_blocked(
+        self, user_id: int, offset: int, limit: int
+    ) -> list[models_user.UserProfile]:
+        """Collect profiles of not blocked users."""
+        return await self._collect_profiles(user_id, offset, limit, "is_blocked=false")
+
+    @postgres_reconnect
+    async def collect_profiles_blocked(
+        self, user_id: int, offset: int, limit: int
+    ) -> list[models_user.UserProfile]:
+        """Collect profiles of blocked users."""
+        return await self._collect_profiles(user_id, offset, limit, "is_blocked=true")
 
 
 class MatchedUsersRepoDatabase(

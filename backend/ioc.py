@@ -5,13 +5,16 @@ from dependency_injector import containers, providers
 
 from backend import settings
 from backend.api import locations
-from backend.repositories import repo_interfaces
-from backend.repositories.repo_auth import UserAuthDatabaseResourceRepository
-from backend.repositories.repo_interests import InterestsDatabaseRepository
-from backend.repositories.repo_location import LocationDatabaseRepository
-from backend.repositories.repo_matcha import VisitedUsersDatabaseRepo
-from backend.repositories.repo_preference import PreferenceDatabaseRepository
-from backend.repositories.repo_profile import UserProfileDatabaseRepository
+from backend.mathca import matches
+from backend.repositories import (
+    repo_auth,
+    repo_interests,
+    repo_interfaces,
+    repo_location,
+    repo_matcha,
+    repo_preference,
+    repo_profile,
+)
 from backend.repositories_redis.redis_avatars import UsersAvatarsRedisRepo
 
 
@@ -28,33 +31,50 @@ class IOCContainer(containers.DeclarativeContainer):
     auth_repository: providers.Factory[
         repo_interfaces.AuthRepositoryInterface
     ] = providers.Factory(
-        UserAuthDatabaseResourceRepository,
+        repo_auth.UserAuthDatabaseResourceRepository,
         database_connection=database_connection,
     )
     profile_repository: providers.Factory[
         repo_interfaces.ProfileRepositoryInterface
     ] = providers.Factory(
-        UserProfileDatabaseRepository, database_connection=database_connection
+        repo_profile.UserProfileDatabaseRepository,
+        database_connection=database_connection,
     )
     location_repository: providers.Factory[
-        LocationDatabaseRepository
+        repo_interfaces.LocationRepositoryInterface
     ] = providers.Factory(
-        LocationDatabaseRepository, database_connection=database_connection
+        repo_location.LocationDatabaseRepository,
+        database_connection=database_connection,
     )
     preferences_repository: providers.Factory[
-        PreferenceDatabaseRepository
+        repo_interfaces.PreferenceRepositoryInterface
     ] = providers.Factory(
-        PreferenceDatabaseRepository, database_connection=database_connection
+        repo_preference.PreferenceDatabaseRepository,
+        database_connection=database_connection,
     )
     interests_repository: providers.Factory[
-        InterestsDatabaseRepository
+        repo_interfaces.InterestsRepositoryInterface
     ] = providers.Factory(
-        InterestsDatabaseRepository, database_connection=database_connection
+        repo_interests.InterestsDatabaseRepository,
+        database_connection=database_connection,
     )
     visited_users_repository: providers.Factory[
-        VisitedUsersDatabaseRepo
+        repo_interfaces.VisitsRepoInterface
     ] = providers.Factory(
-        VisitedUsersDatabaseRepo, database_connection=database_connection
+        repo_matcha.VisitedUsersDatabaseRepo, database_connection=database_connection
+    )
+    matched_repository: providers.Factory[
+        repo_interfaces.MatchedUsersRepoInterface
+    ] = providers.Factory(
+        repo_matcha.MatchedUsersRepoDatabase, database_connection=database_connection
+    )
+    user_relationships: providers.Factory[
+        matches.UsersRelationships
+    ] = providers.Factory(
+        matches.UsersRelationships,
+        repo_profile=profile_repository,
+        repo_matched=matched_repository,
+        repo_visited=visited_users_repository,
     )
 
     location_client: providers.Resource[locations.LocationClient] = providers.Resource(

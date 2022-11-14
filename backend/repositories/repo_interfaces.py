@@ -101,7 +101,7 @@ class InterestsRepositoryInterface(ABC):
         """Insert nes interest."""
 
 
-class MatchaRepoInterface(ABC):
+class VisitsRepoInterface(ABC):
     """Interface for core matcha queries."""
 
     @abstractmethod
@@ -139,6 +139,24 @@ class MatchaRepoInterface(ABC):
         self, target_user_id: int
     ) -> list[models_matcha.VisitedUserModel]:
         """Collect visitors for user."""
+
+    @abstractmethod
+    async def _collect_profiles(
+        self, user_id: int, offset: int, limit: int, query_modifiers: str | None = None
+    ) -> list[models_user.UserProfile]:
+        """Collect profiles of visited users."""
+
+    @abstractmethod
+    async def collect_profiles_except_blocked(
+        self, user_id: int, offset: int, limit: int
+    ) -> list[models_user.UserProfile]:
+        """Collect profiles of not blocked users."""
+
+    @abstractmethod
+    async def collect_profiles_blocked(
+        self, user_id: int, offset: int, limit: int
+    ) -> list[models_user.UserProfile]:
+        """Collect profiles of blocked users."""
 
 
 class MatchedUsersRepoInterface(ABC):

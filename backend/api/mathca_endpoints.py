@@ -15,7 +15,7 @@ ROUTER_OBJ: fastapi.APIRouter = fastapi.APIRouter()
 @inject
 async def block_users(
     reported_user: models_matcha.VisitedUserModel,
-    matcha_db: repo_interfaces.MatchaRepoInterface = fastapi.Depends(
+    matcha_db: repo_interfaces.VisitsRepoInterface = fastapi.Depends(
         Provide[ioc.IOCContainer.visited_users_repository]
     ),
     authorize: AuthJWT = fastapi.Depends(),
@@ -33,7 +33,7 @@ async def block_users(
 @inject
 async def collect_visited_users(
     user_id: int,
-    matcha_db: repo_interfaces.MatchaRepoInterface = fastapi.Depends(
+    matcha_db: repo_interfaces.VisitsRepoInterface = fastapi.Depends(
         Provide[ioc.IOCContainer.visited_users_repository]
     ),
     authorize: AuthJWT = fastapi.Depends(),
@@ -53,7 +53,7 @@ async def collect_visited_users(
 @inject
 async def collect_blocked_users(
     user_id: int,
-    matcha_db: repo_interfaces.MatchaRepoInterface = fastapi.Depends(
+    matcha_db: repo_interfaces.VisitsRepoInterface = fastapi.Depends(
         Provide[ioc.IOCContainer.visited_users_repository]
     ),
     authorize: AuthJWT = fastapi.Depends(),
@@ -73,7 +73,7 @@ async def collect_blocked_users(
 @inject
 async def collect_visits(
     target_user_id: int,
-    matcha_db: repo_interfaces.MatchaRepoInterface = fastapi.Depends(
+    matcha_db: repo_interfaces.VisitsRepoInterface = fastapi.Depends(
         Provide[ioc.IOCContainer.visited_users_repository]
     ),
     authorize: AuthJWT = fastapi.Depends(),
