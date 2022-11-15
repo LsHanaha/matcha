@@ -60,7 +60,11 @@ APP_OBJ.include_router(
 APP_OBJ.include_router(
     interests_endpoints.ROUTER_OBJ, prefix="/interests", tags=["interests"]
 )
-APP_OBJ.include_router(mathca_endpoints.ROUTER_OBJ, prefix="/matcha", tags=["Core API"])
+APP_OBJ.include_router(
+    mathca_endpoints.ROUTER_OBJ,
+    prefix="/visits",
+    tags=["Users visits and new statuses"],
+)
 
 
 APP_OBJ.add_middleware(

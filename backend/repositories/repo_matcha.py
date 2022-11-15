@@ -128,7 +128,12 @@ class VisitedUsersDatabaseRepo(
 
     @postgres_reconnect
     async def collect_profiles(
-        self, user_id: int, offset: int, limit: int, query_modifiers: str | None = None
+        self,
+        user_id: int,
+        offset: int,
+        limit: int,
+        query_modifiers: str | None = None,
+        visitors: bool = False,
     ) -> list[models_user.UserProfile]:
         """Collect profiles of visited users."""
         result: list[Record] = await self.database_connection.execute(
@@ -138,8 +143,8 @@ class VisitedUsersDatabaseRepo(
             FROM profiles as p
             JOIN visits as v
             ON v.user_id = p.user_id
-            WHERE v.user_id=:user_id {f"AND {query_modifiers}" if query_modifiers else ""}
-            ORDER BY p.last_name, p.first_name
+            WHERE v.{'target_' if visitors else ''}user_id=:user_id {f"AND {query_modifiers}" if query_modifiers else ""}
+            ORDER BY v.last_visit_time DESC
             OFFSET :offset
             LIMIT :limit;
             """,
@@ -188,7 +193,8 @@ class MatchedUsersRepoDatabase(
         await self.database_connection.execute(
             """
             DELETE FROM matches
-            WHERE first_user_id=:first_user_id AND second_user_id=:second_user_id;
+            WHERE (first_user_id=:first_user_id AND second_user_id=:second_user_id) 
+                  OR (first_user_id=:second_user_id AND second_user_id=:first_user_id);
             """,
             {"first_user_id": first_user_id, "second_user_id": second_user_id},
         )

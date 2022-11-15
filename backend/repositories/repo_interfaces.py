@@ -50,6 +50,10 @@ class ProfileRepositoryInterface(ABC):
     async def update_last_online(self, user_id: int):
         """Update last_online field for user."""
 
+    @abstractmethod
+    async def update_fame_rating(self, user_id: int, change_value: int) -> None:
+        """Change user_id fame rating +1 or -1."""
+
 
 class LocationRepositoryInterface(ABC):
     """Interface for user location."""
@@ -148,7 +152,12 @@ class VisitsRepoInterface(ABC):
 
     @abstractmethod
     async def collect_profiles(
-        self, user_id: int, offset: int, limit: int, query_modifiers: str | None = None
+        self,
+        user_id: int,
+        offset: int,
+        limit: int,
+        query_modifiers: str | None = None,
+        visitors: bool = False,
     ) -> list[models_user.UserProfile]:
         """Collect profiles of visited users."""
 

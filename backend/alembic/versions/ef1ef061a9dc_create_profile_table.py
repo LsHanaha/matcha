@@ -37,6 +37,7 @@ def upgrade() -> None:
         sa.Column("interests", sa.ARRAY(sa.Integer, dimensions=2), nullable=True),
         sa.Column("city", sa.String, nullable=False),
     )
+    op.create_check_constraint("ch_profiles_fame_rating", "profiles", "fame_rating>=0")
 
 
 def downgrade() -> None:

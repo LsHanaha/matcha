@@ -62,3 +62,16 @@ class UserProfileDatabaseRepository(
             """,
             {"user_id": user_id, "last_online": datetime.datetime.now()},
         )
+
+    @postgres_reconnect
+    async def update_fame_rating(self, user_id: int, increment: int) -> None:
+        """Change user_id fame rating +1 or -1."""
+        await self.database_connection.execute(
+            """
+            UPDATE profiles
+            SET fame_rating=fame_rating + :value 
+            WHERE user_id=:user_id;
+            """,
+            {"value": increment, "user_id": user_id},
+        )
+        return

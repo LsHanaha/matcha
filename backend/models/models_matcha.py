@@ -15,7 +15,7 @@ class VisitedUserModel(pydantic.BaseModel):
     is_liked: bool | None = False
     is_blocked: bool | None = False
     is_reported: bool | None = False
-    is_match: bool | False = False
+    is_match: bool = False
 
     def check_is_blocked(self):
         """Set likes as false if love is gone."""
