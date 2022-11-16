@@ -8,9 +8,9 @@ from backend import ioc
 from backend.api import (
     error_handlers,
     interests_endpoints,
-    mathca_endpoints,
     preference_endpoints,
     profile_endpoints,
+    visits_endpoints,
 )
 from backend.auth import auth_endpoints
 from backend.settings import settings_base
@@ -29,7 +29,7 @@ async def startup():
             profile_endpoints,
             preference_endpoints,
             interests_endpoints,
-            mathca_endpoints,
+            visits_endpoints,
         ]
     )
 
@@ -61,7 +61,7 @@ APP_OBJ.include_router(
     interests_endpoints.ROUTER_OBJ, prefix="/interests", tags=["interests"]
 )
 APP_OBJ.include_router(
-    mathca_endpoints.ROUTER_OBJ,
+    visits_endpoints.ROUTER_OBJ,
     prefix="/visits",
     tags=["Users visits and new statuses"],
 )

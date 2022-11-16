@@ -5,9 +5,8 @@ from dependency_injector.wiring import Provide, inject
 from fastapi_jwt_auth import AuthJWT
 
 from backend import ioc
-from backend.mathca import matches
-from backend.models import models_base, models_matcha, models_user
-from backend.repositories import repo_interfaces
+from backend.mathca import visits
+from backend.models import models_base, models_user, models_visits
 
 ROUTER_OBJ: fastapi.APIRouter = fastapi.APIRouter()
 
@@ -15,8 +14,8 @@ ROUTER_OBJ: fastapi.APIRouter = fastapi.APIRouter()
 @ROUTER_OBJ.post("/", response_model=models_base.ResponseModel)
 @inject
 async def update_visit(
-    visited_user: models_matcha.VisitedUserModel,
-    relationship_db: matches.UsersRelationships = fastapi.Depends(
+    visited_user: models_visits.VisitedUserModel,
+    relationship_db: visits.UsersRelationships = fastapi.Depends(
         Provide[ioc.IOCContainer.user_relationships]
     ),
     authorize: AuthJWT = fastapi.Depends(),
@@ -34,7 +33,7 @@ async def collect_visited_users(
     user_id: int,
     limit: int = 10,
     offset: int = 0,
-    relationship_db: matches.UsersRelationships = fastapi.Depends(
+    relationship_db: visits.UsersRelationships = fastapi.Depends(
         Provide[ioc.IOCContainer.user_relationships]
     ),
     authorize: AuthJWT = fastapi.Depends(),
@@ -56,7 +55,7 @@ async def collect_blocked_users(
     user_id: int,
     limit: int = 10,
     offset: int = 0,
-    relationship_db: matches.UsersRelationships = fastapi.Depends(
+    relationship_db: visits.UsersRelationships = fastapi.Depends(
         Provide[ioc.IOCContainer.user_relationships]
     ),
     authorize: AuthJWT = fastapi.Depends(),
@@ -78,7 +77,7 @@ async def collect_visitors(
     user_id: int,
     limit: int = 10,
     offset: int = 0,
-    relationship_db: matches.UsersRelationships = fastapi.Depends(
+    relationship_db: visits.UsersRelationships = fastapi.Depends(
         Provide[ioc.IOCContainer.user_relationships]
     ),
     authorize: AuthJWT = fastapi.Depends(),

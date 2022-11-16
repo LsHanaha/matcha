@@ -5,15 +5,15 @@ from dependency_injector import containers, providers
 
 from backend import settings
 from backend.api import locations
-from backend.mathca import matches
+from backend.mathca import visits
 from backend.repositories import (
     repo_auth,
     repo_interests,
     repo_interfaces,
     repo_location,
-    repo_matcha,
     repo_preference,
     repo_profile,
+    repo_visits,
 )
 from backend.repositories_redis.redis_avatars import UsersAvatarsRedisRepo
 
@@ -61,17 +61,17 @@ class IOCContainer(containers.DeclarativeContainer):
     visited_users_repository: providers.Factory[
         repo_interfaces.VisitsRepoInterface
     ] = providers.Factory(
-        repo_matcha.VisitedUsersDatabaseRepo, database_connection=database_connection
+        repo_visits.VisitedUsersDatabaseRepo, database_connection=database_connection
     )
     matched_repository: providers.Factory[
         repo_interfaces.MatchedUsersRepoInterface
     ] = providers.Factory(
-        repo_matcha.MatchedUsersRepoDatabase, database_connection=database_connection
+        repo_visits.MatchedUsersRepoDatabase, database_connection=database_connection
     )
     user_relationships: providers.Factory[
-        matches.UsersRelationships
+        visits.UsersRelationships
     ] = providers.Factory(
-        matches.UsersRelationships,
+        visits.UsersRelationships,
         repo_profile=profile_repository,
         repo_matched=matched_repository,
         repo_visited=visited_users_repository,

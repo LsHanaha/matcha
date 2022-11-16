@@ -1,4 +1,4 @@
-"""Models fore core functionality."""
+"""Models fore user visits."""
 
 import datetime
 

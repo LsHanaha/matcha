@@ -1,11 +1,7 @@
-"""Module contains most of all specific funtions for user profile."""
+"""Module contains most of all specific functions for users visits."""
 
-from backend.models import models_matcha, models_user
+from backend.models import models_user, models_visits
 from backend.repositories import repo_interfaces
-
-"""
-3. При обновлении проверить матчинг
-"""
 
 
 class UsersRelationships:
@@ -49,13 +45,13 @@ class UsersRelationships:
             target_user_id, offset, limit, visitors=True
         )
 
-    async def update_visited(self, new_visit: models_matcha.VisitedUserModel) -> bool:
+    async def update_visited(self, new_visit: models_visits.VisitedUserModel) -> bool:
         """Update visited users.
 
         Different behaviour for first visit and any interactions with
         another user profile.
         """
-        old_visit: models_matcha.VisitedUserModel | None = (
+        old_visit: models_visits.VisitedUserModel | None = (
             await self._repo_visited.collect_pair_of_users(
                 new_visit.user_id, new_visit.target_user_id
             )
@@ -77,7 +73,7 @@ class UsersRelationships:
 
     async def set_match(self, user_id: int, target_user_id: int) -> None:
         """If like is set - trying to make a couple"""
-        target_user_visit: models_matcha.VisitedUserModel | None = (
+        target_user_visit: models_visits.VisitedUserModel | None = (
             await self._repo_visited.collect_pair_of_users(target_user_id, user_id)
         )
         if target_user_visit and target_user_visit.is_liked:

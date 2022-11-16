@@ -1,8 +1,8 @@
-"""Repository for matcha."""
+"""Repository for handling users visits to each other profiles."""
 
 from databases.interfaces import Record
 
-from backend.models import models_matcha, models_user
+from backend.models import models_user, models_visits
 from backend.repositories import (
     BaseAsyncRepository,
     postgres_reconnect,
@@ -17,7 +17,7 @@ class VisitedUsersDatabaseRepo(
 
     @postgres_reconnect
     async def update_visited_users(
-        self, visited_user: models_matcha.VisitedUserModel
+        self, visited_user: models_visits.VisitedUserModel
     ) -> bool:
         """Update visited user."""
         result: bool = await self.database_connection.execute(
@@ -58,7 +58,7 @@ class VisitedUsersDatabaseRepo(
     @postgres_reconnect
     async def collect_visited_users(
         self, user_id: int, query_modifier: str | None = None
-    ) -> list[models_matcha.VisitedUserModel]:
+    ) -> list[models_visits.VisitedUserModel]:
         """Collect all visited users."""
         result: list[Record] = await self.database_connection.execute(
             f"""
@@ -71,12 +71,12 @@ class VisitedUsersDatabaseRepo(
         )
         if not result:
             return []
-        return [models_matcha.VisitedUserModel(**dict(row)) for row in result]
+        return [models_visits.VisitedUserModel(**dict(row)) for row in result]
 
     @postgres_reconnect
     async def collect_users_except_blocked(
         self, user_id: int
-    ) -> list[models_matcha.VisitedUserModel]:
+    ) -> list[models_visits.VisitedUserModel]:
         """Collect all visited_users_except_blocked."""
         return await self.collect_visited_users(
             user_id, "is_blocked != true and is_reported != true"
@@ -85,7 +85,7 @@ class VisitedUsersDatabaseRepo(
     @postgres_reconnect
     async def collect_users_blocked(
         self, user_id: int
-    ) -> list[models_matcha.VisitedUserModel]:
+    ) -> list[models_visits.VisitedUserModel]:
         """Collect blocked users."""
         return await self.collect_visited_users(
             user_id, "is_blocked=true and is_reported=true"
@@ -94,7 +94,7 @@ class VisitedUsersDatabaseRepo(
     @postgres_reconnect
     async def collect_pair_of_users(
         self, user_id_first: int, user_id_second: int
-    ) -> models_matcha.VisitedUserModel | None:
+    ) -> models_visits.VisitedUserModel | None:
         """Collect pair of users."""
         result: Record = await self.database_connection.execute(
             """
@@ -107,12 +107,12 @@ class VisitedUsersDatabaseRepo(
         )
         if not result:
             return None
-        return models_matcha.VisitedUserModel(**dict(result))
+        return models_visits.VisitedUserModel(**dict(result))
 
     @postgres_reconnect
     async def visitors(
         self, target_user_id: int
-    ) -> list[models_matcha.VisitedUserModel]:
+    ) -> list[models_visits.VisitedUserModel]:
         """Collect visitors fof user."""
         result: list[Record] = await self.database_connection.execute(
             """
@@ -124,7 +124,7 @@ class VisitedUsersDatabaseRepo(
         )
         if not result:
             return []
-        return [models_matcha.VisitedUserModel(**dict(row)) for row in result]
+        return [models_visits.VisitedUserModel(**dict(row)) for row in result]
 
     @postgres_reconnect
     async def collect_profiles(
@@ -203,7 +203,7 @@ class MatchedUsersRepoDatabase(
     @postgres_reconnect
     async def collect_pair_of_users(
         self, first_user_id: int, second_user_id: int
-    ) -> models_matcha.MatchedUsers | None:
+    ) -> models_visits.MatchedUsers | None:
         """Collect pair of users."""
         result: Record = await self.database_connection.execute(
             """
@@ -215,4 +215,4 @@ class MatchedUsersRepoDatabase(
         )
         if not result:
             return None
-        return models_matcha.MatchedUsers(**dict(result))
+        return models_visits.MatchedUsers(**dict(result))

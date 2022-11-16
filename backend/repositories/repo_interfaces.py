@@ -4,9 +4,9 @@ from abc import ABC, abstractmethod
 
 from backend.models import (
     models_location,
-    models_matcha,
     models_preferences,
     models_user,
+    models_visits,
 )
 
 
@@ -110,7 +110,7 @@ class VisitsRepoInterface(ABC):
 
     @abstractmethod
     async def update_visited_users(
-        self, visited_user: models_matcha.VisitedUserModel
+        self, visited_user: models_visits.VisitedUserModel
     ) -> bool:
         """Store visited user."""
 
@@ -123,31 +123,31 @@ class VisitsRepoInterface(ABC):
     @abstractmethod
     async def collect_visited_users(
         self, user_id: int, query_modifier: str | None = None
-    ) -> list[models_matcha.VisitedUserModel]:
+    ) -> list[models_visits.VisitedUserModel]:
         """Collect users."""
 
     @abstractmethod
     async def collect_users_except_blocked(
         self, user_id: int
-    ) -> list[models_matcha.VisitedUserModel]:
+    ) -> list[models_visits.VisitedUserModel]:
         """Collect all visited users except blocked."""
 
     @abstractmethod
     async def collect_users_blocked(
         self, user_id: int
-    ) -> list[models_matcha.VisitedUserModel]:
+    ) -> list[models_visits.VisitedUserModel]:
         """Collect all blocked users."""
 
     @abstractmethod
     async def collect_pair_of_users(
         self, user_id_first: int, user_id_second: int
-    ) -> models_matcha.VisitedUserModel | None:
+    ) -> models_visits.VisitedUserModel | None:
         """collect pair for users for checking stuff."""
 
     @abstractmethod
     async def visitors(
         self, target_user_id: int
-    ) -> list[models_matcha.VisitedUserModel]:
+    ) -> list[models_visits.VisitedUserModel]:
         """Collect visitors for user."""
 
     @abstractmethod
@@ -188,5 +188,5 @@ class MatchedUsersRepoInterface(ABC):
     @abstractmethod
     async def collect_pair_of_users(
         self, first_user_id: int, second_user_id: int
-    ) -> models_matcha.MatchedUsers | None:
+    ) -> models_visits.MatchedUsers | None:
         """Collect pair of users."""

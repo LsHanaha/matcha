@@ -27,6 +27,7 @@ async def handle_error_500(
 async def authjwt_exception_handler(
     _: fastapi.Request, exc: exceptions.AuthJWTException
 ) -> responses.JSONResponse:
+    """Handle auth_jwt exceptions."""
     return responses.JSONResponse(
         status_code=exc.status_code, content={"detail": exc.message}
     )
