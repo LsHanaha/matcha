@@ -22,7 +22,14 @@ class IPWhoISApiResponseModel(pydantic.BaseModel):
     timezone: TimezoneApi | None
 
 
-class LocationRepositoryModel(pydantic.BaseModel):
+class CoordinatesLocationModel(pydantic.BaseModel):
+    """Model for user coordinates."""
+
+    latitude: float
+    longitude: float
+
+
+class LocationRepositoryModel(CoordinatesLocationModel):
     """Location in database."""
 
     user_id: int
@@ -30,6 +37,4 @@ class LocationRepositoryModel(pydantic.BaseModel):
     country: str
     region: str
     city: str
-    latitude: float
-    longitude: float
     tz: str | None

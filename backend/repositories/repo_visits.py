@@ -143,7 +143,8 @@ class VisitedUsersDatabaseRepo(
             FROM profiles as p
             JOIN visits as v
             ON v.user_id = p.user_id
-            WHERE v.{'target_' if visitors else ''}user_id=:user_id {f"AND {query_modifiers}" if query_modifiers else ""}
+            WHERE v.{'target_' if visitors else ''}user_id=:user_id 
+                  {f"AND {query_modifiers}" if query_modifiers else ""}
             ORDER BY v.last_visit_time DESC
             OFFSET :offset
             LIMIT :limit;

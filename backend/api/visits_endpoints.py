@@ -5,7 +5,7 @@ from dependency_injector.wiring import Provide, inject
 from fastapi_jwt_auth import AuthJWT
 
 from backend import ioc
-from backend.mathca import visits
+from backend.mathca import matcha_visits
 from backend.models import models_base, models_user, models_visits
 
 ROUTER_OBJ: fastapi.APIRouter = fastapi.APIRouter()
@@ -15,7 +15,7 @@ ROUTER_OBJ: fastapi.APIRouter = fastapi.APIRouter()
 @inject
 async def update_visit(
     visited_user: models_visits.VisitedUserModel,
-    relationship_db: visits.UsersRelationships = fastapi.Depends(
+    relationship_db: matcha_visits.UsersRelationships = fastapi.Depends(
         Provide[ioc.IOCContainer.user_relationships]
     ),
     authorize: AuthJWT = fastapi.Depends(),
@@ -33,7 +33,7 @@ async def collect_visited_users(
     user_id: int,
     limit: int = 10,
     offset: int = 0,
-    relationship_db: visits.UsersRelationships = fastapi.Depends(
+    relationship_db: matcha_visits.UsersRelationships = fastapi.Depends(
         Provide[ioc.IOCContainer.user_relationships]
     ),
     authorize: AuthJWT = fastapi.Depends(),
@@ -55,7 +55,7 @@ async def collect_blocked_users(
     user_id: int,
     limit: int = 10,
     offset: int = 0,
-    relationship_db: visits.UsersRelationships = fastapi.Depends(
+    relationship_db: matcha_visits.UsersRelationships = fastapi.Depends(
         Provide[ioc.IOCContainer.user_relationships]
     ),
     authorize: AuthJWT = fastapi.Depends(),
@@ -77,7 +77,7 @@ async def collect_visitors(
     user_id: int,
     limit: int = 10,
     offset: int = 0,
-    relationship_db: visits.UsersRelationships = fastapi.Depends(
+    relationship_db: matcha_visits.UsersRelationships = fastapi.Depends(
         Provide[ioc.IOCContainer.user_relationships]
     ),
     authorize: AuthJWT = fastapi.Depends(),

@@ -5,7 +5,7 @@ from dependency_injector import containers, providers
 
 from backend import settings
 from backend.api import locations
-from backend.mathca import visits
+from backend.mathca import matcha_visits
 from backend.repositories import (
     repo_auth,
     repo_interests,
@@ -69,9 +69,9 @@ class IOCContainer(containers.DeclarativeContainer):
         repo_visits.MatchedUsersRepoDatabase, database_connection=database_connection
     )
     user_relationships: providers.Factory[
-        visits.UsersRelationships
+        matcha_visits.UsersRelationships
     ] = providers.Factory(
-        visits.UsersRelationships,
+        matcha_visits.UsersRelationships,
         repo_profile=profile_repository,
         repo_matched=matched_repository,
         repo_visited=visited_users_repository,
