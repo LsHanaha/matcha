@@ -17,3 +17,10 @@ class GenderEnum(enum.IntEnum):
 
     MALE: int = 0
     FEMALE: int = 1
+
+
+class SearchOrder(enum.IntEnum):
+    """Order of search."""
+
+    ASC: int = 0
+    DESC: int = 1

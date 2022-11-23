@@ -3,7 +3,9 @@
 from abc import ABC, abstractmethod
 
 from backend.models import (
+    models_enums,
     models_location,
+    models_matcha,
     models_preferences,
     models_user,
     models_visits,
@@ -85,6 +87,12 @@ class PreferenceRepositoryInterface(ABC):
         self, new_preferences: models_preferences.UserPreferences
     ) -> bool:
         """Update user location."""
+
+    @abstractmethod
+    async def determine_sexual_preferences_for_user(
+        self, user_profile: models_user.UserProfile
+    ) -> str:
+        """Create query string for sexual preferences."""
 
 
 class InterestsRepositoryInterface(ABC):
@@ -190,3 +198,20 @@ class MatchedUsersRepoInterface(ABC):
         self, first_user_id: int, second_user_id: int
     ) -> models_visits.MatchedUsers | None:
         """Collect pair of users."""
+
+
+class MatchaInterface(ABC):
+    """Search users."""
+
+    @abstractmethod
+    async def search_users(
+        self,
+        params: models_matcha.SearchQueryModel,
+        order_direction: models_enums.SearchOrder,
+        order_by: str,
+        offset: int,
+        limit: int,
+        sexual_preferences_query: str,
+        coordinates_query: str,
+    ) -> models_matcha.SearchUsersModels:
+        """Search users by params."""

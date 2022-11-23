@@ -5,12 +5,13 @@ from dependency_injector import containers, providers
 
 from backend import settings
 from backend.api import locations
-from backend.mathca import matcha_visits
+from backend.mathca import matcha_search, matcha_visits, mathcha_helpers
 from backend.repositories import (
     repo_auth,
     repo_interests,
     repo_interfaces,
     repo_location,
+    repo_matcha,
     repo_preference,
     repo_profile,
     repo_visits,
@@ -68,6 +69,11 @@ class IOCContainer(containers.DeclarativeContainer):
     ] = providers.Factory(
         repo_visits.MatchedUsersRepoDatabase, database_connection=database_connection
     )
+    matcha_search_repository: providers.Factory[
+        repo_interfaces.MatchaInterface
+    ] = providers.Factory(
+        repo_matcha.MatchaDatabaseRepository, database_connection=database_connection
+    )
     user_relationships: providers.Factory[
         matcha_visits.UsersRelationships
     ] = providers.Factory(
@@ -86,7 +92,20 @@ class IOCContainer(containers.DeclarativeContainer):
         location_client=location_client,
         location_repository=location_repository,
     )
+    coordinates_helpers: providers.Resource[
+        mathcha_helpers.CoordinatesMatchaHelpers
+    ] = providers.Resource(mathcha_helpers.CoordinatesMatchaHelpers)
 
     avatars_service: providers.Resource[UsersAvatarsRedisRepo] = providers.Resource(
         UsersAvatarsRedisRepo, redis_connection=redis_connection
+    )
+    matcha_search_service: providers.Factory[
+        matcha_search.MatchaSearch
+    ] = providers.Factory(
+        matcha_search.MatchaSearch,
+        repo_profile=profile_repository,
+        repo_matcha=matcha_search_repository,
+        repo_preferences=preferences_repository,
+        repo_locations=location_repository,
+        coordinates_helpers=coordinates_helpers,
     )

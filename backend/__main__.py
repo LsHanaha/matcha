@@ -8,6 +8,7 @@ from backend import ioc
 from backend.api import (
     error_handlers,
     interests_endpoints,
+    matcha_endpoints,
     preference_endpoints,
     profile_endpoints,
     visits_endpoints,
@@ -30,6 +31,7 @@ async def startup():
             preference_endpoints,
             interests_endpoints,
             visits_endpoints,
+            matcha_endpoints,
         ]
     )
 
@@ -65,7 +67,7 @@ APP_OBJ.include_router(
     prefix="/visits",
     tags=["Users visits and new statuses"],
 )
-
+APP_OBJ.include_router(matcha_endpoints.ROUTER_OBJ, prefix="/matcha", tags=["matcha"])
 
 APP_OBJ.add_middleware(
     CORSMiddleware,

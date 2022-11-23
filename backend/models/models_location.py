@@ -38,3 +38,12 @@ class LocationRepositoryModel(CoordinatesLocationModel):
     region: str
     city: str
     tz: str | None
+
+
+class CoordinatesForSearchUsersModels(pydantic.BaseModel):
+    """Model to determine locations for searching users."""
+
+    lat_min: float
+    lat_max: float
+    lng_min: float
+    lng_max: float
