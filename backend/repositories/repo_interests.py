@@ -30,21 +30,19 @@ class InterestsDatabaseRepository(
         return [models_user.Interests(**dict(rec)) for rec in records]
 
     @postgres_reconnect
-    async def search_interests_by_name(
-        self, pattern: str
-    ) -> list[models_user.Interests]:
+    async def search_interests_by_name(self, word: str) -> list[models_user.Interests]:
         """Search interests by name."""
 
-        records: Record = await self.database_connection.fetch_one(
-            """
+        # TODO sql injection, fix it when I understand how to do it
+        records: list[Record] = await self.database_connection.fetch_all(
+            f"""
             SELECT *
             FROM interests
-            WHERE name LIKE '%:name%'
+            WHERE LOWER(name) LIKE '%{word.lower()}%'
             ORDER BY name ASC;
-            """,
-            {"name": pattern},
+            """
         )
-        return [models_user.Interests(dict(rec)) for rec in records]
+        return [models_user.Interests(**dict(rec)) for rec in records]
 
     @postgres_reconnect
     async def insert_new_interest(self, name: str) -> models_user.Interests:

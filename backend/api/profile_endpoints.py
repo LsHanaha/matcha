@@ -54,7 +54,7 @@ async def update_profile(
     return models_base.ResponseModel(status=result)
 
 
-@ROUTER_OBJ.post("/avatars-store/", response_model=models_base.ResponseModel)
+@ROUTER_OBJ.post("/avatars/", response_model=models_base.ResponseModel)
 @inject
 async def store_avatars(
     user_id: int,
@@ -75,9 +75,7 @@ async def store_avatars(
     return models_base.ResponseModel(status=True)
 
 
-@ROUTER_OBJ.get(
-    "/avatars-retrieve/{user_id}/", response_model=list[models_user.UserAvatar]
-)
+@ROUTER_OBJ.get("/avatars/{user_id}/", response_model=list[models_user.UserAvatar])
 @inject
 async def retrieve_avatars(
     user_id: int,
@@ -98,7 +96,7 @@ async def retrieve_avatars(
     return user_avatars
 
 
-@ROUTER_OBJ.post("/avatars-delete/", response_model=models_base.ResponseModel)
+@ROUTER_OBJ.post("/avatars/delete/", response_model=models_base.ResponseModel)
 @inject
 async def delete_avatar(
     user_id: int,
