@@ -3,8 +3,11 @@
 from databases.interfaces import Record
 
 from backend.models import models_location
-from backend.repositories import (BaseAsyncRepository, postgres_reconnect,
-                                  repo_interfaces)
+from backend.repositories import (
+    BaseAsyncRepository,
+    postgres_reconnect,
+    repo_interfaces,
+)
 
 
 class LocationDatabaseRepository(
@@ -17,7 +20,7 @@ class LocationDatabaseRepository(
         self, user_id: int
     ) -> models_location.LocationRepositoryModel | None:
         """Collect user location."""
-        location_record: Record | None = await self.database_connection.execute(
+        location_record: Record | None = await self.database_connection.fetch_one(
             """
                 SELECT *
                 FROM user_locations

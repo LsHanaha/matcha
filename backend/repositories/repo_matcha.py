@@ -39,7 +39,7 @@ class MatchaDatabaseRepository(BaseAsyncRepository, repo_interfaces.MatchaInterf
             """
         if is_count:
             query = f"SELECT COUNT (*) FROM ({query})"
-        result: list[Record] = await self.database_connection.execute(
+        result: list[Record] | Record = await self.database_connection.fetch_all(
             query,
             query_mods,
         )

@@ -22,11 +22,11 @@ class UserProfileDatabaseRepository(
         self, user_id: int
     ) -> user_models.UserProfile | None:
         """Collect user profile."""
-        user_dict: Record | None = await self.database_connection.execute(
+        user_dict: Record | None = await self.database_connection.fetch_one(
             """
-            SELECT * 
+            SELECT *
             FROM profiles
-            WHERE user_id=:user_id
+            WHERE user_id=:user_id;
             """,
             {"user_id": user_id},
         )

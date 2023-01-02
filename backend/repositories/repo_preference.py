@@ -20,7 +20,7 @@ class PreferenceDatabaseRepository(
         self, user_id: int
     ) -> models_preferences.UserPreferences | None:
         """Collect user preferences."""
-        preferences: Record | None = await self.database_connection.execute(
+        preferences: Record | None = await self.database_connection.fetch_one(
             """
                 SELECT *
                 FROM preferences

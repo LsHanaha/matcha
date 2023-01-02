@@ -9,7 +9,7 @@ class UserPreferences(pydantic.BaseModel):
     """Model for user preference."""
 
     user_id: int
-    sexual_preferences: models_enums.SexualPreferencesEnum
+    sexual_preference: models_enums.SexualPreferencesEnum
     min_fame_rating: int
     min_age: int
     max_age: int

@@ -8,6 +8,7 @@ from backend import ioc
 from backend.helpers import update_last_online
 from backend.models import models_base, models_preferences
 from backend.repositories import repo_interfaces
+from backend.settings import settings_base
 
 ROUTER_OBJ: fastapi.APIRouter = fastapi.APIRouter()
 
@@ -25,7 +26,8 @@ async def get_preferences(
     authorize: AuthJWT = fastapi.Depends(),
 ) -> models_preferences.UserPreferences:
     """Get user's preferences."""
-    authorize.jwt_required()
+    if not settings_base.debug:
+        authorize.jwt_required()
     user_preferences: models_preferences.UserPreferences | None = (
         await preferences_repo.collect_user_preference(user_id)
     )
@@ -49,7 +51,8 @@ async def update_preferences(
     authorize: AuthJWT = fastapi.Depends(),
 ) -> models_base.ResponseModel:
     """Update user's preferences."""
-    authorize.jwt_required()
+    if not settings_base.debug:
+        authorize.jwt_required()
     new_preferences.user_id = user_id
     result: bool = await preferences_repo.update_user_preference(new_preferences)
     return models_base.ResponseModel(status=result)

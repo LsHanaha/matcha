@@ -69,7 +69,7 @@ class UserAuthDatabaseResourceRepository(
                 "Cannot fetch user from database because not enough data for query."
             )
 
-        user: user_models.UserAuth | None = await self.database_connection.execute(
+        user: user_models.UserAuth | None = await self.database_connection.fetch_one(
             f"""
                 SELECT * FROM users WHERE {query_modifier};
             """,

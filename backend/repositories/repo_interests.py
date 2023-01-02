@@ -19,7 +19,7 @@ class InterestsDatabaseRepository(
     async def collect_all_interests(self) -> list[models_user.Interests]:
         """Collect list of all interests."""
 
-        records: Record = await self.database_connection.execute(
+        records: list[Record] = await self.database_connection.fetch_all(
             """
             SELECT *
             FROM interests;
@@ -35,7 +35,7 @@ class InterestsDatabaseRepository(
     ) -> list[models_user.Interests]:
         """Search interests by name."""
 
-        records: Record = await self.database_connection.execute(
+        records: Record = await self.database_connection.fetch_one(
             """
             SELECT *
             FROM interests
