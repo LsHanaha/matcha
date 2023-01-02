@@ -41,9 +41,9 @@ class UserProfileDatabaseRepository(
         result: bool = await self.database_connection.execute(
             """
             UPDATE profiles
-            SET first_name=:first_name, last_name:=last_name, birthday=:birthday,
-                gender=:gender, sexual_preferences=sexual_preferences, biography=:biography,
-                main_photo_name=:main_photo_name, city=:city
+            SET first_name=:first_name, last_name=:last_name, birthday=:birthday,
+                gender=:gender, sexual_orientation=:sexual_orientation, biography=:biography,
+                main_photo_name=:main_photo_name, city=:city, interests=:interests
             WHERE user_id=:user_id
             RETURNING 1;
             """,

@@ -13,7 +13,7 @@ from backend.settings import settings_base
 ROUTER_OBJ: fastapi.APIRouter = fastapi.APIRouter()
 
 
-@ROUTER_OBJ.get("/profile/{user_id}/", response_model=models_user.UserProfile)
+@ROUTER_OBJ.get("/{user_id}/", response_model=models_user.UserProfile)
 @inject
 async def get_profile(
     user_id: int,
@@ -36,7 +36,7 @@ async def get_profile(
     return user_profile
 
 
-@ROUTER_OBJ.post("/profile/{user_id}/", response_model=models_base.ResponseModel)
+@ROUTER_OBJ.post("/{user_id}/", response_model=models_base.ResponseModel)
 @inject
 async def update_profile(
     user_id: int,
