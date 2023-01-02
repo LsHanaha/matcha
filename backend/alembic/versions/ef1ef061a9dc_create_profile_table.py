@@ -31,7 +31,6 @@ def upgrade() -> None:
         sa.Column("sexual_orientation", sa.SmallInteger, nullable=False, default=0),
         sa.Column("biography", sa.Text, nullable=True),
         sa.Column("main_photo_name", sa.String, nullable=False),
-        sa.Column("last_visit", sa.DateTime, nullable=True),
         sa.Column("fame_rating", sa.Integer, default=0),
         sa.Column("last_online", sa.DateTime, nullable=True),
         sa.Column("interests", sa.ARRAY(sa.Integer, dimensions=2), nullable=True),

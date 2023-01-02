@@ -8,8 +8,8 @@ class SexualPreferencesEnum(enum.IntEnum):
     """Sexual preferences for user."""
 
     BI: int = 0
-    HETEROSEXUAL: int = 0
-    HOMOSEXUAL: int = 0
+    HETEROSEXUAL: int = 1
+    HOMOSEXUAL: int = 2
 
 
 class GenderEnum(enum.IntEnum):

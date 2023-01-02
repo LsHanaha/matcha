@@ -14,8 +14,8 @@ class MatchaDatabaseRepository(BaseAsyncRepository, repo_interfaces.MatchaInterf
     """Search users."""
 
     async def _collect_rows(
-        self, array_of_queries: list[str], query_mods: dict
-    ) -> list[dict]:
+        self, array_of_queries: list[str], query_mods: dict, is_count: bool = False
+    ) -> list[dict] | int:
         """Return records from database."""
         (
             interests_query,
@@ -24,8 +24,7 @@ class MatchaDatabaseRepository(BaseAsyncRepository, repo_interfaces.MatchaInterf
             age_gap_query,
             fame_rating_gap_query,
         ) = array_of_queries
-        result: list[Record] = await self.database_connection.execute(
-            f"""
+        query: str = f"""
                 SELECT * {interests_query} FROM 
                 (SELECT * 
                 FROM profiles as p
@@ -37,9 +36,15 @@ class MatchaDatabaseRepository(BaseAsyncRepository, repo_interfaces.MatchaInterf
                 ORDER BY :order_by :order_direction
                 LIMIT :limit
                 OFFSET :offset
-            """,
+            """
+        if is_count:
+            query = f"SELECT COUNT (*) FROM ({query})"
+        result: list[Record] = await self.database_connection.execute(
+            query,
             query_mods,
         )
+        if is_count:
+            return result[0]
         if not result:
             return []
         return [dict(row) for row in result]
@@ -48,37 +53,7 @@ class MatchaDatabaseRepository(BaseAsyncRepository, repo_interfaces.MatchaInterf
         self, array_of_queries: list[str], query_mods: dict
     ) -> int:
         """Return amount of records."""
-        (
-            interests_query,
-            coordinates_query,
-            sexual_preferences_query,
-            age_gap_query,
-            fame_rating_gap_query,
-        ) = array_of_queries
-        del query_mods["offset"]
-        del query_mods["limit"]
-        del query_mods["order_by"]
-        del query_mods["order_direction"]
-        count: int = await self.database_connection.execute(
-            f"""
-                SELECT COUNT(*) FROM 
-                (
-                    (SELECT * 
-                        FROM profiles as p
-                        WHERE :preferences_query
-                        LEFT JOIN user_locations as locations
-                        ON locations.user_id = p.user_id
-                    ) as p_l
-                    LEFT JOIN visits as v 
-                    ON p_l.user_id = v.user_id
-                    WHERE v.
-                ) 
-                WHERE {coordinates_query} AND {sexual_preferences_query}
-                      {age_gap_query} {fame_rating_gap_query}
-            """,
-            query_mods,
-        )
-        return count
+        return await self._collect_rows(array_of_queries, query_mods, is_count=True)
 
     @staticmethod
     async def _make_query_entities(
