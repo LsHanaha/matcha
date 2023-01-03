@@ -7,6 +7,7 @@ from fastapi_jwt_auth import AuthJWT
 from backend import ioc
 from backend.mathca import matcha_visits
 from backend.models import models_base, models_user, models_visits
+from backend.settings import settings_base
 
 ROUTER_OBJ: fastapi.APIRouter = fastapi.APIRouter()
 
@@ -21,7 +22,8 @@ async def update_visit(
     authorize: AuthJWT = fastapi.Depends(),
 ):
     """New visit for user, can change block, like, etc."""
-    authorize.jwt_required()
+    if not settings_base.debug:
+        authorize.jwt_required()
     visited_user.check_is_blocked()
     result: bool = await relationship_db.update_visited(visited_user)
     return models_base.ResponseModel(status=result)
@@ -39,7 +41,8 @@ async def collect_visited_users(
     authorize: AuthJWT = fastapi.Depends(),
 ):
     """Collect visited users for specific user."""
-    authorize.jwt_required()
+    if not settings_base.debug:
+        authorize.jwt_required()
     result: list[
         models_user.UserProfile
     ] = await relationship_db.collect_visited_except_banned(user_id, offset, limit)
@@ -61,7 +64,8 @@ async def collect_blocked_users(
     authorize: AuthJWT = fastapi.Depends(),
 ):
     """Collect blocked users for specific user."""
-    authorize.jwt_required()
+    if not settings_base.debug:
+        authorize.jwt_required()
     result: list[
         models_user.UserProfile
     ] = await relationship_db.collect_visited_banned(user_id, offset, limit)
@@ -83,7 +87,8 @@ async def collect_visitors(
     authorize: AuthJWT = fastapi.Depends(),
 ):
     """Collect users who saw user_id profile."""
-    authorize.jwt_required()
+    if not settings_base.debug:
+        authorize.jwt_required()
     result: list[models_user.UserProfile] = await relationship_db.collect_visitors(
         user_id, offset, limit
     )

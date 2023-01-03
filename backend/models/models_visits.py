@@ -8,7 +8,6 @@ import pydantic
 class VisitedUserModel(pydantic.BaseModel):
     """Model for handling likes and visiting."""
 
-    id: int | None
     user_id: int
     target_user_id: int
     last_visit_time: datetime.datetime | None

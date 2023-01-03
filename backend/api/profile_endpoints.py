@@ -109,5 +109,5 @@ async def delete_avatar(
     """Method for removing avatar for a user."""
     if not settings_base.debug:
         authorize.jwt_required()
-    result = await user_avatars_repo.delete_avatar(user_id, file_name)
+    result: bool = await user_avatars_repo.delete_avatar(user_id, file_name)
     return models_base.ResponseModel(status=result)

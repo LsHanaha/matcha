@@ -60,7 +60,7 @@ class VisitedUsersDatabaseRepo(
         self, user_id: int, query_modifier: str | None = None
     ) -> list[models_visits.VisitedUserModel]:
         """Collect all visited users."""
-        result: list[Record] = await self.database_connection.execute(
+        result: list[Record] = await self.database_connection.fetch_all(
             f"""
                 SELECT *
                 FROM visits
@@ -96,7 +96,7 @@ class VisitedUsersDatabaseRepo(
         self, user_id_first: int, user_id_second: int
     ) -> models_visits.VisitedUserModel | None:
         """Collect pair of users."""
-        result: Record = await self.database_connection.execute(
+        result: Record = await self.database_connection.fetch_all(
             """
                 SELECT *
                 FROM visits
@@ -114,7 +114,7 @@ class VisitedUsersDatabaseRepo(
         self, target_user_id: int
     ) -> list[models_visits.VisitedUserModel]:
         """Collect visitors fof user."""
-        result: list[Record] = await self.database_connection.execute(
+        result: list[Record] = await self.database_connection.fetch_all(
             """
             SELECT *
             FROM visits
@@ -136,13 +136,13 @@ class VisitedUsersDatabaseRepo(
         visitors: bool = False,
     ) -> list[models_user.UserProfile]:
         """Collect profiles of visited users."""
-        result: list[Record] = await self.database_connection.execute(
+        result: list[Record] = await self.database_connection.fetch_all(
             f"""
-            SELECT p.user_id, p.first_name, p.birthday, p.gender, p.sexual_orientation,
+            SELECT p.user_id, p.first_name, p.last_name, p.birthday, p.gender, p.sexual_orientation,
                    p.main_photo_name, p.interests, p.city
             FROM profiles as p
             JOIN visits as v
-            ON v.user_id = p.user_id
+            ON v.{'target_' if not visitors else ''}user_id = p.user_id
             WHERE v.{'target_' if visitors else ''}user_id=:user_id 
                   {f"AND {query_modifiers}" if query_modifiers else ""}
             ORDER BY v.last_visit_time DESC
@@ -160,14 +160,14 @@ class VisitedUsersDatabaseRepo(
         self, user_id: int, offset: int, limit: int
     ) -> list[models_user.UserProfile]:
         """Collect profiles of not blocked users."""
-        return await self._collect_profiles(user_id, offset, limit, "is_blocked=false")
+        return await self.collect_profiles(user_id, offset, limit, "is_blocked=false")
 
     @postgres_reconnect
     async def collect_profiles_blocked(
         self, user_id: int, offset: int, limit: int
     ) -> list[models_user.UserProfile]:
         """Collect profiles of blocked users."""
-        return await self._collect_profiles(user_id, offset, limit, "is_blocked=true")
+        return await self.collect_profiles(user_id, offset, limit, "is_blocked=true")
 
 
 class MatchedUsersRepoDatabase(
@@ -205,8 +205,8 @@ class MatchedUsersRepoDatabase(
     async def collect_pair_of_users(
         self, first_user_id: int, second_user_id: int
     ) -> models_visits.MatchedUsers | None:
-        """Collect pair of users."""
-        result: Record = await self.database_connection.execute(
+        """Collect a pair of users."""
+        result: Record = await self.database_connection.fetch_one(
             """
             SELECT *
             FROM matches

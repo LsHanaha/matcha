@@ -20,7 +20,7 @@ class UsersRelationships:
     async def collect_visited(
         self, user_id: int, offset: int = 0, limit: int = 10
     ) -> list[models_user.UserProfile]:
-        """Collect profiles of visited users."""
+        """Collect profiles of users which user_id visit."""
         return await self._repo_visited.collect_profiles(user_id, offset, limit)
 
     async def collect_visited_except_banned(
