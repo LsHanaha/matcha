@@ -22,14 +22,20 @@ def upgrade() -> None:
         sa.Column(
             "target_user_id", sa.Integer, sa.ForeignKey("users.id", ondelete="CASCADE")
         ),
-        sa.Column("last_visit_time", sa.DateTime, onupdate=sa.func.current_timestamp()),
-        sa.Column("is_liked", sa.Boolean, server_default=False),
-        sa.Column("is_blocked", sa.Boolean, server_default=False),
-        sa.Column("is_reported", sa.Boolean, server_default=False),
-        sa.Column("is_match", sa.Boolean, server_default=False),
+        sa.Column(
+            "last_visit_time",
+            sa.DateTime,
+            onupdate=sa.func.current_timestamp(),
+            server_onupdate=sa.func.current_timestamp(),
+            nullable=False,
+        ),
+        sa.Column("is_match", sa.Boolean, default=False, nullable=False),
+        sa.Column("is_paired", sa.Boolean, default=False, nullable=False),
+        sa.Column("is_blocked", sa.Boolean, default=False, nullable=False),
+        sa.Column("is_reported", sa.Boolean, default=False, nullable=False),
     )
     op.create_unique_constraint(
-        "uc_users_pair_visits", "visits", ["user_id", "target_user_id"]
+        "uc_users_pair", "visits", ["user_id", "target_user_id"]
     )
 
 

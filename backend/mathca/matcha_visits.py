@@ -57,11 +57,12 @@ class UsersRelationships:
             )
         )
         if old_visit:
-            if old_visit.is_liked != new_visit.is_liked:
+            # TODO is it possible to make it all as a transaction?
+            if old_visit.is_match != new_visit.is_match:
                 await self.update_fame_rating(
-                    new_visit.target_user_id, new_visit.is_liked
+                    new_visit.target_user_id, new_visit.is_match
                 )
-                if old_visit.is_liked:
+                if old_visit.is_match:
                     await self.retrieve_match(
                         new_visit.user_id, new_visit.target_user_id
                     )
@@ -76,7 +77,7 @@ class UsersRelationships:
         target_user_visit: models_visits.VisitedUserModel | None = (
             await self._repo_visited.collect_pair_of_users(target_user_id, user_id)
         )
-        if target_user_visit and target_user_visit.is_liked:
+        if target_user_visit and target_user_visit.is_match:
             await self._repo_matched.set_users_pair(user_id, target_user_id)
             await self._repo_visited.change_is_match(user_id, target_user_id, True)
 

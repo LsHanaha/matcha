@@ -22,16 +22,14 @@ class VisitedUsersDatabaseRepo(
         """Update visited user."""
         result: bool = await self.database_connection.execute(
             """
-                INSERT INTO visits(user_id, target_user_id, is_liked, 
-                                   is_blocked, is_reported)
-                VALUES (:user_id, :target_user_id, :is_liked, :is_blocked, :is_reported)
-                ON CONFLICT(uc_users_pair_visits)
+                INSERT INTO visits(user_id, target_user_id, is_match, is_blocked, is_reported)
+                VALUES (:user_id, :target_user_id, :is_match, :is_blocked, :is_reported)
+                ON CONFLICT ON CONSTRAINT uc_users_pair
                 DO UPDATE SET 
-                is_liked=:is_liked, is_blocked=:is_blocked, is_reported=:is_reported
-                WHERE user_id=:user_id AND target_user_id=:target_user_id
+                is_match=:is_match, is_blocked=:is_blocked, is_reported=:is_reported
                 RETURNING 1;
             """,
-            visited_user.dict(),
+            visited_user.dict(exclude={"last_visit_time", "is_paired"}),
         )
         return result
 
@@ -43,12 +41,12 @@ class VisitedUsersDatabaseRepo(
         await self.database_connection.execute(
             """
             UPDATE visits
-            SET (is_match=:is_match)
-            WHERE (user_id=:user_id AND target_user_id=:taget_user_id) 
-                  OR (user_id=:target_user_id AND target_user_id=:user_id);  
+            SET is_paired = :is_paired
+            WHERE (user_id = :user_id AND target_user_id = :target_user_id) 
+                  OR (user_id = :target_user_id AND target_user_id = :user_id);  
             """,
             {
-                "is_match": new_status,
+                "is_paired": new_status,
                 "user_id": user_id,
                 "target_user_id": target_user_id,
             },
@@ -96,7 +94,7 @@ class VisitedUsersDatabaseRepo(
         self, user_id_first: int, user_id_second: int
     ) -> models_visits.VisitedUserModel | None:
         """Collect pair of users."""
-        result: Record = await self.database_connection.fetch_all(
+        result: Record = await self.database_connection.fetch_one(
             """
                 SELECT *
                 FROM visits
@@ -181,7 +179,7 @@ class MatchedUsersRepoDatabase(
 
         await self.database_connection.execute(
             """
-            INSERT INTO matches(firts_user_id, second_user_id)
+            INSERT INTO matches(first_user_id, second_user_id)
             VALUES(:first_user_id, :second_user_id);
             """,
             {"first_user_id": first_user_id, "second_user_id": second_user_id},
