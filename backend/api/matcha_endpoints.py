@@ -7,6 +7,7 @@ from fastapi_jwt_auth import AuthJWT
 from backend import ioc
 from backend.mathca.matcha_search import MatchaSearch
 from backend.models import models_enums, models_matcha
+from backend.settings import settings_base
 
 ROUTER_OBJ: fastapi.APIRouter = fastapi.APIRouter()
 
@@ -25,7 +26,8 @@ async def search_users(
     authorize: AuthJWT = fastapi.Depends(),
 ):
     """Search users by parameters."""
-    # authorize.jwt_required()
+    if not settings_base.debug:
+        authorize.jwt_required()
 
     return await matcha_search.find_users(
         params,

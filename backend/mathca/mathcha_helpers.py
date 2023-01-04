@@ -43,7 +43,9 @@ class CoordinatesMatchaHelpers:
         Returns
         """
         lat_delta: float = distance / _DISTANCE_BETWEEN_LATITUDE_KM
-        lng_delta: float = (coords.latitude / 90) * _DISTANCE_BETWEEN_LONGITUDE_EQUATOR
+        lng_delta: float = distance / (
+            (coords.latitude / 90) * _DISTANCE_BETWEEN_LONGITUDE_EQUATOR
+        )
         return CoordinatesForSearchUsersModels(
             lat_min=coords.latitude - lat_delta,
             lat_max=coords.latitude + lat_delta,

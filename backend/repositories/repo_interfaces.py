@@ -88,12 +88,6 @@ class PreferenceRepositoryInterface(ABC):
     ) -> bool:
         """Update user location."""
 
-    @abstractmethod
-    async def determine_sexual_preferences_for_user(
-        self, user_profile: models_user.UserProfile
-    ) -> str:
-        """Create query string for sexual preferences."""
-
 
 class InterestsRepositoryInterface(ABC):
     """Interface for user repository."""
@@ -211,7 +205,14 @@ class MatchaInterface(ABC):
         order_by: str,
         offset: int,
         limit: int,
-        sexual_preferences_query: str,
+        user_profile: models_user.UserProfile,
         coordinates_query: str,
     ) -> models_matcha.SearchUsersModels:
         """Search users by params."""
+
+    @staticmethod
+    @abstractmethod
+    def determine_sexual_preferences_for_user(
+        user_profile: models_user.UserProfile,
+    ) -> str:
+        """Determine sexual preferences for user."""

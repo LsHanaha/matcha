@@ -51,37 +51,3 @@ class PreferenceDatabaseRepository(
             {**new_preferences.dict()},
         )
         return bool(result)
-
-    async def determine_sexual_preferences_for_user(
-        self,
-        user_profile: models_user.UserProfile,
-    ) -> str:
-        """Prepare search query for expected gender and preferences."""
-        expected_preferences: list[str]
-        if (
-            user_profile.sexual_orientation
-            == models_enums.SexualPreferencesEnum.HOMOSEXUAL
-        ):
-            expected_preferences = [
-                str(models_enums.SexualPreferencesEnum.HOMOSEXUAL),
-                str(models_enums.SexualPreferencesEnum.BI),
-            ]
-            return f"sexual_orientation in ({','.join(expected_preferences)}) AND gender={user_profile.gender}"
-        elif (
-            user_profile.sexual_orientation
-            == models_enums.SexualPreferencesEnum.HETEROSEXUAL
-        ):
-            expected_preferences = [
-                str(models_enums.SexualPreferencesEnum.HETEROSEXUAL),
-                str(models_enums.SexualPreferencesEnum.BI),
-            ]
-            return f"sexual_orientation in ({','.join(expected_preferences)}) AND gender={int(not user_profile.gender)}"
-        else:
-            return (
-                "NOT ("
-                f"sexual_orientation={models_enums.SexualPreferencesEnum.HOMOSEXUAL} "
-                f"AND gender={int(not user_profile.gender)}) "
-                "OR NOT ("
-                f"sexual_orientation={models_enums.SexualPreferencesEnum.HOMOSEXUAL} "
-                f"AND gender={user_profile.gender})"
-            )

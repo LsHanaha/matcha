@@ -7,6 +7,7 @@ from backend.models import (
     models_location,
     models_matcha,
     models_preferences,
+    models_user,
 )
 from backend.repositories import repo_interfaces
 
@@ -38,10 +39,8 @@ class MatchaSearch:
     ) -> str:
         """Create query string for coordinates."""
         return (
-            f"(user_locations.latitude > {coordinates.lat_min} AND "
-            f"user_locations.latitude < {coordinates.lat_max}) AND  "
-            f"AND (user_locations.longitude > {coordinates.lng_min} "
-            f"AND user_locations.longitude < {coordinates.lat_max})"
+            f"(latitude > {coordinates.lat_min} AND latitude < {coordinates.lat_max}) AND "
+            f"(longitude > {coordinates.lng_min} AND longitude < {coordinates.lat_max})"
         )
 
     async def _prepare_coordinates_query(
@@ -78,10 +77,8 @@ class MatchaSearch:
         order_by: str | None = None,
     ) -> models_matcha.SearchUsersModels:
         """Search users."""
-        sexual_preferences_query: str = (
-            await self._repo_preferences.determine_sexual_preferences_for_user(
-                await self._repo_profile.collect_user_profile(params.user_id)
-            )
+        user_profile: models_user.UserProfile = (
+            await self._repo_profile.collect_user_profile(params.user_id)
         )
         coordinates_query: str = await self._prepare_coordinates_query(params)
         found_users: models_matcha.SearchUsersModels = (
@@ -91,7 +88,7 @@ class MatchaSearch:
                 order_by,
                 offset,
                 limit,
-                sexual_preferences_query,
+                user_profile,
                 coordinates_query,
             )
         )

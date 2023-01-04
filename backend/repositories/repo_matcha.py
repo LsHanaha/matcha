@@ -1,8 +1,10 @@
 """Matcha repository - search and recommend"""
 
+from datetime import date
+
 from databases.interfaces import Record
 
-from backend.models import models_enums, models_location, models_matcha
+from backend.models import models_enums, models_matcha, models_user
 from backend.repositories import (
     BaseAsyncRepository,
     postgres_reconnect,
@@ -18,33 +20,50 @@ class MatchaDatabaseRepository(BaseAsyncRepository, repo_interfaces.MatchaInterf
     ) -> list[dict] | int:
         """Return records from database."""
         (
-            interests_query,
             coordinates_query,
             sexual_preferences_query,
             age_gap_query,
             fame_rating_gap_query,
         ) = array_of_queries
+
         query: str = f"""
-                SELECT * {interests_query} FROM 
-                (SELECT * 
-                FROM profiles as p
-                WHERE :preferences_query
-                LEFT JOIN user_locations as locations
-                ON locations.user_id = p.user_id) as p_l 
-                WHERE {coordinates_query} AND {sexual_preferences_query}
-                      {age_gap_query} {fame_rating_gap_query}
-                ORDER BY :order_by :order_direction
-                LIMIT :limit
-                OFFSET :offset
-            """
+            SELECT u.user_id as user_id, first_name, last_name, birthday, gender, sexual_orientation, biography, 
+                   main_photo_name, fame_rating, last_online, interests, city, interests_common, is_match, is_paired, 
+                   is_blocked, is_reported
+            FROM (
+                SELECT puser_id as user_id, first_name, last_name, birthday, gender, sexual_orientation, biography, 
+                       main_photo_name, fame_rating, last_online, interests, pcity as city,
+                       cardinality(interests & ARRAY[:interests_array]::integer[]) as interests_common
+                FROM 
+                (
+                    SELECT p.user_id as puser_id, p.city as pcity, *
+                    FROM profiles as p
+                    LEFT JOIN user_locations as l
+                    ON l.user_id = p.user_id
+                ) as p_l
+                WHERE (
+                    ({coordinates_query})
+                    AND ({sexual_preferences_query})
+                    AND {fame_rating_gap_query} 
+                    AND {age_gap_query}
+                )
+            ) as u
+            left JOIN visits as v
+            ON v.target_user_id = u.user_id and v.user_id = :user_id
+            {f"ORDER BY {query_mods.pop('order_by')} {query_mods.pop('order_direction')} LIMIT :limit OFFSET :offset ;" 
+             if not is_count else ''}
+        """
+
         if is_count:
-            query = f"SELECT COUNT (*) FROM ({query})"
+            query = f"SELECT COUNT (*) FROM ({query}) as c;"
+            del query_mods["limit"]
+            del query_mods["offset"]
         result: list[Record] | Record = await self.database_connection.fetch_all(
             query,
             query_mods,
         )
         if is_count:
-            return result[0]
+            return result[0]._mapping.get("count", 0)
         if not result:
             return []
         return [dict(row) for row in result]
@@ -56,44 +75,90 @@ class MatchaDatabaseRepository(BaseAsyncRepository, repo_interfaces.MatchaInterf
         return await self._collect_rows(array_of_queries, query_mods, is_count=True)
 
     @staticmethod
-    async def _make_query_entities(
+    def determine_sexual_preferences_for_user(
+        user_profile: models_user.UserProfile,
+    ) -> str:
+        """Prepare search query for expected gender and preferences."""
+        expected_preferences: list[str]
+        if (
+            user_profile.sexual_orientation
+            == models_enums.SexualPreferencesEnum.HOMOSEXUAL
+        ):
+            expected_preferences = [
+                str(models_enums.SexualPreferencesEnum.HOMOSEXUAL.value),
+                str(models_enums.SexualPreferencesEnum.BI.value),
+            ]
+            return f"sexual_orientation in ({','.join(expected_preferences)}) AND gender={user_profile.gender}"
+        elif (
+            user_profile.sexual_orientation
+            == models_enums.SexualPreferencesEnum.HETEROSEXUAL
+        ):
+            expected_preferences = [
+                str(models_enums.SexualPreferencesEnum.HETEROSEXUAL.value),
+                str(models_enums.SexualPreferencesEnum.BI.value),
+            ]
+            return f"sexual_orientation in ({','.join(expected_preferences)}) AND gender={int(not user_profile.gender)}"
+        else:
+            return (
+                f"(sexual_orientation != {models_enums.SexualPreferencesEnum.HOMOSEXUAL} "
+                f"AND gender != {int(not user_profile.gender)}"
+                ") OR ("
+                f"sexual_orientation != {models_enums.SexualPreferencesEnum.HOMOSEXUAL} "
+                f"AND gender != {user_profile.gender})"
+            )
+
+    def _make_query_entities(
+        self,
         params: models_matcha.SearchQueryModel,
         order_direction: models_enums.SearchOrder,
         order_by: str | None,
         offset: int,
         limit: int,
-        sexual_preferences_query: str,
+        user_profile: models_user.UserProfile,
         coordinates_query: str,
     ) -> (list[str], dict):
         """Make entities for query."""
         query_mods: dict = {
             "user_id": params.user_id,
-            "order_by": "p_l." + order_by if order_by else "p_l.user_id",
+            "order_by": order_by if order_by else "user_id",
             "order_direction": order_direction.name,
             "limit": limit,
             "offset": offset,
+            "interests_array": params.interests_id if params.interests_id else -1,
         }
 
         age_gap_query: str = ""
         if params.age_gap:
-            query_mods["min_age"] = params.age_gap[0]
-            query_mods["max_age"] = params.age_gap[1]
-            age_gap_query = " AND  (p_l.birthday >:min_age AND p_l.birthday <:max_age)"
+            min_age: str = date.strftime(
+                date(
+                    date.today().year - params.age_gap[0],
+                    date.today().month,
+                    date.today().day,
+                ),
+                "%Y-%m-%d",
+            )
+            max_age: str = date.strftime(
+                date(
+                    date.today().year - params.age_gap[1],
+                    date.today().month,
+                    date.today().day,
+                ),
+                "%Y-%m-%d",
+            )
+            age_gap_query = f"(birthday > '{max_age}' AND birthday < '{min_age}')"
 
         fame_rating_gap_query: str = ""
         if params.fame_rating_gap:
             query_mods["min_rating"] = params.fame_rating_gap[0]
             query_mods["max_rating"] = params.fame_rating_gap[1]
             fame_rating_gap_query = (
-                " AND  (p_l.fame_rating >:min_rating AND p_l.fame_rating <:max_rating)"
+                "(fame_rating >:min_rating AND fame_rating <:max_rating)"
             )
-        interests_query: str = ""
-        if params.interests_id:
-            interests_query = "cardinality(p_l.interests & ARRAY:interests_array)"
-            query_mods["interests_array"] = params.interests_id
 
+        sexual_preferences_query: str = self.determine_sexual_preferences_for_user(
+            user_profile
+        )
         array_of_queries = [
-            interests_query,
             coordinates_query,
             sexual_preferences_query,
             age_gap_query,
@@ -109,7 +174,7 @@ class MatchaDatabaseRepository(BaseAsyncRepository, repo_interfaces.MatchaInterf
         order_by: str | None,
         offset: int,
         limit: int,
-        sexual_preferences_query: str,
+        user_profile: models_user.UserProfile,
         coordinates_query: str,
     ) -> models_matcha.SearchUsersModels:
         """Search users."""
@@ -119,7 +184,7 @@ class MatchaDatabaseRepository(BaseAsyncRepository, repo_interfaces.MatchaInterf
             order_by,
             offset,
             limit,
-            sexual_preferences_query,
+            user_profile,
             coordinates_query,
         )
         records: list[dict] = await self._collect_rows(array_of_queries, query_mods)

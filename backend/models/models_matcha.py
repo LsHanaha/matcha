@@ -11,7 +11,7 @@ class SearchQueryModel(pydantic.BaseModel):
     age_gap: None | tuple[int, int]
     fame_rating_gap: None | tuple[int, int]
     distance: None | int
-    interests_id: None | list[int]
+    interests_id: None | list[str]
 
 
 class SearchUsersModels(pydantic.BaseModel):
