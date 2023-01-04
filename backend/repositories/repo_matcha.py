@@ -16,7 +16,11 @@ class MatchaDatabaseRepository(BaseAsyncRepository, repo_interfaces.MatchaInterf
     """Search users."""
 
     async def _collect_rows(
-        self, array_of_queries: list[str], query_mods: dict, is_count: bool = False
+        self,
+        array_of_queries: list[str],
+        query_mods: dict,
+        interests: list[str] | None,
+        is_count: bool = False,
     ) -> list[dict] | int:
         """Return records from database."""
         (
@@ -33,7 +37,8 @@ class MatchaDatabaseRepository(BaseAsyncRepository, repo_interfaces.MatchaInterf
             FROM (
                 SELECT puser_id as user_id, first_name, last_name, birthday, gender, sexual_orientation, biography, 
                        main_photo_name, fame_rating, last_online, interests, pcity as city,
-                       cardinality(interests & ARRAY[:interests_array]::integer[]) as interests_common
+                       cardinality(interests & ARRAY[{','.join(interests) if interests else ''}]::integer[]) 
+                       as interests_common
                 FROM 
                 (
                     SELECT p.user_id as puser_id, p.city as pcity, *
@@ -69,10 +74,12 @@ class MatchaDatabaseRepository(BaseAsyncRepository, repo_interfaces.MatchaInterf
         return [dict(row) for row in result]
 
     async def _collect_total_amount_of_rows(
-        self, array_of_queries: list[str], query_mods: dict
+        self, array_of_queries: list[str], query_mods: dict, interests: list[str] | None
     ) -> int:
         """Return amount of records."""
-        return await self._collect_rows(array_of_queries, query_mods, is_count=True)
+        return await self._collect_rows(
+            array_of_queries, query_mods, interests, is_count=True
+        )
 
     @staticmethod
     def determine_sexual_preferences_for_user(
@@ -124,7 +131,6 @@ class MatchaDatabaseRepository(BaseAsyncRepository, repo_interfaces.MatchaInterf
             "order_direction": order_direction.name,
             "limit": limit,
             "offset": offset,
-            "interests_array": params.interests_id if params.interests_id else -1,
         }
 
         age_gap_query: str = ""
@@ -187,8 +193,10 @@ class MatchaDatabaseRepository(BaseAsyncRepository, repo_interfaces.MatchaInterf
             user_profile,
             coordinates_query,
         )
-        records: list[dict] = await self._collect_rows(array_of_queries, query_mods)
+        records: list[dict] = await self._collect_rows(
+            array_of_queries, query_mods, params.interests_id
+        )
         amount: int = await self._collect_total_amount_of_rows(
-            array_of_queries, query_mods
+            array_of_queries, query_mods, params.interests_id
         )
         return models_matcha.SearchUsersModels(users=records, amount=amount)
