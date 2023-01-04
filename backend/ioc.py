@@ -16,7 +16,7 @@ from backend.repositories import (
     repo_profile,
     repo_visits,
 )
-from backend.repositories_redis.redis_avatars import UsersAvatarsRedisRepo
+from backend.repositories_redis import redis_avatars, redis_recommendations
 
 
 class IOCContainer(containers.DeclarativeContainer):
@@ -96,8 +96,10 @@ class IOCContainer(containers.DeclarativeContainer):
         mathcha_helpers.CoordinatesMatchaHelpers
     ] = providers.Resource(mathcha_helpers.CoordinatesMatchaHelpers)
 
-    avatars_service: providers.Resource[UsersAvatarsRedisRepo] = providers.Resource(
-        UsersAvatarsRedisRepo, redis_connection=redis_connection
+    avatars_service: providers.Resource[
+        redis_avatars.UsersAvatarsRedisRepo
+    ] = providers.Resource(
+        redis_avatars.UsersAvatarsRedisRepo, redis_connection=redis_connection
     )
     matcha_search_service: providers.Factory[
         matcha_search.MatchaSearch
@@ -108,4 +110,19 @@ class IOCContainer(containers.DeclarativeContainer):
         repo_preferences=preferences_repository,
         repo_locations=location_repository,
         coordinates_helpers=coordinates_helpers,
+    )
+
+    recommendations_repo: providers.Resource[
+        redis_recommendations.UserRecommendationsService
+    ] = providers.Resource(
+        redis_recommendations.UserRecommendationsService,
+        redis_connection=redis_connection,
+    )
+    matcha_recommendations_service: providers.Factory[
+        matcha_search.MatchaRecommendations
+    ] = providers.Factory(
+        matcha_search.MatchaRecommendations,
+        repo_recommendations=recommendations_repo,
+        matcha_search_service=matcha_search_service,
+        repo_profile=profile_repository,
     )

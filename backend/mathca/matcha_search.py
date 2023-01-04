@@ -10,6 +10,7 @@ from backend.models import (
     models_user,
 )
 from backend.repositories import repo_interfaces
+from backend.repositories_redis import redis_recommendations
 
 
 class MatchaSearch:
@@ -97,3 +98,19 @@ class MatchaSearch:
 
 class MatchaRecommendations:
     """Contains models for recommendations."""
+
+    def __init__(
+        self,
+        repo_recommendations: redis_recommendations.UserRecommendationsService,
+        matcha_search_service: MatchaSearch,
+        repo_profile: repo_interfaces.ProfileRepositoryInterface,
+    ):
+        self._repo_recommendations: redis_recommendations.UserRecommendationsService = (
+            repo_recommendations
+        )
+        self._matcha_search_service: MatchaSearch = matcha_search_service
+        self._repo_profile: repo_interfaces.ProfileRepositoryInterface = repo_profile
+
+    async def get_recommendations(self, user_id: int) -> None:
+        """Select recommended users which still not marked as interacted."""
+        pass
