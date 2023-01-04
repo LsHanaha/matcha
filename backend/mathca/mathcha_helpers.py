@@ -1,5 +1,5 @@
 """Helpers functions."""
-from math import asin, cos, radians, sin, sqrt
+from math import asin, cos, fabs, radians, sin, sqrt
 
 from backend.models.models_location import (
     CoordinatesForSearchUsersModels,
@@ -44,7 +44,8 @@ class CoordinatesMatchaHelpers:
         """
         lat_delta: float = distance / _DISTANCE_BETWEEN_LATITUDE_KM
         lng_delta: float = distance / (
-            (coords.latitude / 90) * _DISTANCE_BETWEEN_LONGITUDE_EQUATOR
+            ((coords.latitude - fabs(coords.latitude)) / coords.latitude)
+            * _DISTANCE_BETWEEN_LONGITUDE_EQUATOR
         )
         return CoordinatesForSearchUsersModels(
             lat_min=coords.latitude - lat_delta,

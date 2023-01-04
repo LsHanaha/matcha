@@ -40,21 +40,21 @@ class MatchaSearch:
         """Create query string for coordinates."""
         return (
             f"(latitude > {coordinates.lat_min} AND latitude < {coordinates.lat_max}) AND "
-            f"(longitude > {coordinates.lng_min} AND longitude < {coordinates.lat_max})"
+            f"(longitude > {coordinates.lng_min} AND longitude < {coordinates.lng_max})"
         )
 
     async def _prepare_coordinates_query(
         self,
         params: models_matcha.SearchQueryModel,
-        user_preferences: models_preferences.UserPreferences | None = None,
     ) -> str:
         """Determine coordinates for recommendations."""
-        if not user_preferences:
-            user_preferences = await self._repo_preferences.collect_user_preference(
-                params.user_id
-            )
         if not params.distance:
-            params.distance = user_preferences.max_distance_km
+            user_preferences: models_preferences.UserPreferences | None = (
+                await self._repo_preferences.collect_user_preference(params.user_id)
+            )
+            params.distance = (
+                user_preferences.max_distance_km if user_preferences else 100
+            )
         user_location: models_location.LocationRepositoryModel = (
             await self._repo_locations.collect_user_location(params.user_id)
         )
