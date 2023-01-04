@@ -51,9 +51,10 @@ class MatchaDatabaseRepository(BaseAsyncRepository, repo_interfaces.MatchaInterf
                     AND ({sexual_preferences_query})
                     AND {fame_rating_gap_query} 
                     AND {age_gap_query}
+                    AND puser_id != :user_id
                 )
             ) as u
-            left JOIN visits as v
+            LEFT JOIN visits as v
             ON v.target_user_id = u.user_id and v.user_id = :user_id
             {f"ORDER BY {query_mods.pop('order_by')} {query_mods.pop('order_direction')} LIMIT :limit OFFSET :offset ;" 
              if not is_count else ''}
