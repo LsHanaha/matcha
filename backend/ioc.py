@@ -106,7 +106,7 @@ class IOCContainer(containers.DeclarativeContainer):
     ] = providers.Factory(
         matcha_search.MatchaSearch,
         repo_profile=profile_repository,
-        repo_matcha=matcha_search_repository,
+        repo_matcha_search=matcha_search_repository,
         repo_preferences=preferences_repository,
         repo_locations=location_repository,
         coordinates_helpers=coordinates_helpers,
@@ -123,6 +123,7 @@ class IOCContainer(containers.DeclarativeContainer):
     ] = providers.Factory(
         matcha_search.MatchaRecommendations,
         repo_recommendations=recommendations_repo,
-        matcha_search_service=matcha_search_service,
         repo_profile=profile_repository,
+        repo_matcha_search=matcha_search_repository,
+        matcha_search_service=matcha_search_service,
     )

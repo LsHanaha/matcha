@@ -22,13 +22,13 @@ class MatchaSearch:
     def __init__(
         self,
         repo_profile: repo_interfaces.ProfileRepositoryInterface,
-        repo_matcha: repo_interfaces.MatchaInterface,
+        repo_matcha_search: repo_interfaces.MatchaInterface,
         repo_preferences: repo_interfaces.PreferenceRepositoryInterface,
         repo_locations: repo_interfaces.LocationRepositoryInterface,
         coordinates_helpers: CoordinatesMatchaHelpers,
     ):
         self._repo_profile: repo_interfaces.ProfileRepositoryInterface = repo_profile
-        self._repo_matcha: repo_interfaces.MatchaInterface = repo_matcha
+        self._repo_matcha_search: repo_interfaces.MatchaInterface = repo_matcha_search
         self._repo_preferences: repo_interfaces.PreferenceRepositoryInterface = (
             repo_preferences
         )
@@ -47,27 +47,28 @@ class MatchaSearch:
             f"(longitude > {coordinates.lng_min} AND longitude < {coordinates.lng_max})"
         )
 
-    async def _prepare_coordinates_query(
+    async def prepare_coordinates_query(
         self,
-        params: models_matcha.SearchQueryModel,
+        user_id: int,
+        expected_distance: int | None = None,
     ) -> str:
         """Determine coordinates for recommendations."""
-        if not params.distance:
+        if not expected_distance:
             user_preferences: models_preferences.UserPreferences | None = (
-                await self._repo_preferences.collect_user_preference(params.user_id)
+                await self._repo_preferences.collect_user_preference(user_id)
             )
-            params.distance = (
+            expected_distance = (
                 user_preferences.max_distance_km if user_preferences else 100
             )
         user_location: models_location.LocationRepositoryModel = (
-            await self._repo_locations.collect_user_location(params.user_id)
+            await self._repo_locations.collect_user_location(user_id)
         )
         coordinates: models_location.CoordinatesForSearchUsersModels = (
             self._coordinates_helpers.calculate_coords_from_distance(
                 models_location.CoordinatesLocationModel(
                     latitude=user_location.latitude, longitude=user_location.longitude
                 ),
-                params.distance,
+                expected_distance,
             )
         )
         return self._convert_coordinates_to_query(coordinates)
@@ -84,9 +85,11 @@ class MatchaSearch:
         user_profile: models_user.UserProfile = (
             await self._repo_profile.collect_user_profile(params.user_id)
         )
-        coordinates_query: str = await self._prepare_coordinates_query(params)
+        coordinates_query: str = await self.prepare_coordinates_query(
+            params.user_id, params.distance
+        )
         found_users: models_matcha.SearchUsersModels = (
-            await self._repo_matcha.search_users(
+            await self._repo_matcha_search.search_users(
                 params,
                 order_direction,
                 order_by,
@@ -105,20 +108,27 @@ class MatchaRecommendations:
     def __init__(
         self,
         repo_recommendations: redis_recommendations.UserRecommendationsService,
-        matcha_search_service: MatchaSearch,
         repo_profile: repo_interfaces.ProfileRepositoryInterface,
+        repo_matcha_search: repo_interfaces.MatchaInterface,
+        matcha_search_service: MatchaSearch,
     ):
         self._repo_recommendations: redis_recommendations.UserRecommendationsService = (
             repo_recommendations
         )
-        self._matcha_search_service: MatchaSearch = matcha_search_service
         self._repo_profile: repo_interfaces.ProfileRepositoryInterface = repo_profile
+        self._repo_matcha_search: repo_interfaces.MatchaInterface = repo_matcha_search
+        self._matcha_search_service: MatchaSearch = matcha_search_service
 
     async def _create_recommendations_for_user(
-        self, user_id: int, excluded_users: list[int]
+        self, user_id: int, excluded_users: list[int] | None = None
     ) -> list[models_user.UserProfile]:
-        """Create recommendations for user."""
-        pass
+        """Create and retrieve list of recommended profiles for user."""
+        user_profile: models_user.UserProfile = (
+            await self._repo_profile.collect_user_profile(user_id)
+        )
+        coordinates_query = await self._matcha_search_service.prepare_coordinates_query(
+            user_id
+        )
 
     async def _get_list_of_recommended_users(self, user_id: int) -> list[int]:
         """Select list of recommended users."""
