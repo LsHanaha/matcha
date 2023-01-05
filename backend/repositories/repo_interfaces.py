@@ -45,6 +45,12 @@ class ProfileRepositoryInterface(ABC):
         """Collect =profile for a user."""
 
     @abstractmethod
+    async def collect_list_of_profiles(
+        self, list_of_ids: list[int]
+    ) -> list[models_user.UserProfile]:
+        """Collect list of profiles for list of ids."""
+
+    @abstractmethod
     async def update_user_profile(self, user_profile: models_user.UserProfile) -> bool:
         """Update profile for a user."""
 

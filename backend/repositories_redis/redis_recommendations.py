@@ -34,7 +34,7 @@ class UserRecommendationsService(BaseRedisRepository):
         return
 
     @redis_reconnect
-    async def collect_all_recommendations(self, user_id: int) -> list[int]:
+    async def get_all_recommendations(self, user_id: int) -> list[int]:
         """Get recommendations for user."""
         recommendations: list = await self.redis_connection.lrange(
             self._create_user_recommendations_key(user_id), 0, -1
@@ -44,7 +44,7 @@ class UserRecommendationsService(BaseRedisRepository):
         return [int(recommendation) for recommendation in recommendations]
 
     @redis_reconnect
-    async def collect_one_recommendation(self, user_id: int) -> int | None:
+    async def pop_one_recommendation(self, user_id: int) -> int | None:
         """Get one recommendation for user."""
         recommendation: int = await self.redis_connection.rpop(
             self._create_user_recommendations_key(user_id)
@@ -54,7 +54,7 @@ class UserRecommendationsService(BaseRedisRepository):
         return int(recommendation)
 
     @redis_reconnect
-    async def get_recommendations_count(self, user_id: int) -> int:
+    async def collect_count_of_recommendations(self, user_id: int) -> int:
         """Get recommendation count for user."""
         recommendation_count: int = await self.redis_connection.llen(
             self._create_user_recommendations_key(user_id)

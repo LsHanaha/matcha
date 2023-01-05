@@ -35,6 +35,23 @@ class UserProfileDatabaseRepository(
         return user_models.UserProfile(**dict(user_dict))
 
     @postgres_reconnect
+    async def collect_list_of_profiles(
+        self, list_of_ids: list[int]
+    ) -> list[user_models.UserProfile]:
+        """Collect list of profiles for list of ids."""
+        result: list[Record] = await self.database_connection.fetch_all(
+            """
+            SELECT *
+            FROM profiles
+            WHERE user_id IN :list_of_ids;
+            """,
+            {"list_of_ids": list_of_ids},
+        )
+        if not result:
+            return []
+        return [user_models.UserProfile(user._mapping) for user in result]
+
+    @postgres_reconnect
     async def update_user_profile(self, user_profile: user_models.UserProfile) -> bool:
         """Update profile for a user."""
 

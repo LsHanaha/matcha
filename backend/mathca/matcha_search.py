@@ -1,6 +1,8 @@
 """Searching users and recommendations."""
 
 
+import asyncio
+
 from backend.mathca.mathcha_helpers import CoordinatesMatchaHelpers
 from backend.models import (
     models_enums,
@@ -11,6 +13,7 @@ from backend.models import (
 )
 from backend.repositories import repo_interfaces
 from backend.repositories_redis import redis_recommendations
+from backend.settings import settings_base
 
 
 class MatchaSearch:
@@ -111,6 +114,41 @@ class MatchaRecommendations:
         self._matcha_search_service: MatchaSearch = matcha_search_service
         self._repo_profile: repo_interfaces.ProfileRepositoryInterface = repo_profile
 
-    async def get_recommendations(self, user_id: int) -> None:
-        """Select recommended users which still not marked as interacted."""
+    async def _create_recommendations_for_user(
+        self, user_id: int, excluded_users: list[int]
+    ) -> list[models_user.UserProfile]:
+        """Create recommendations for user."""
         pass
+
+    async def _get_list_of_recommended_users(self, user_id: int) -> list[int]:
+        """Select list of recommended users."""
+        recommended_users_ids: list[int] = []
+        for _ in range(settings_base.count_of_recommendations):
+            rec_user_id: int | None = (
+                await self._repo_recommendations.pop_one_recommendation(user_id)
+            )
+            if rec_user_id is None:
+                break
+            recommended_users_ids.append(rec_user_id)
+        return recommended_users_ids
+
+    async def get_recommendations(self, user_id: int) -> list[models_user.UserProfile]:
+        """Select recommended users which still not marked as interacted."""
+        recommended_users_ids: list[int] = await self._get_list_of_recommended_users(
+            user_id
+        )
+        if not recommended_users_ids:
+            list_of_recommendations: list[
+                models_user.UserProfile
+            ] = await self._create_recommendations_for_user(user_id)
+            asyncio.create_task(
+                self._create_recommendations_for_user(
+                    user_id, [user.user_id for user in list_of_recommendations]
+                )
+            )
+            return list_of_recommendations
+        if not self._repo_recommendations.collect_count_of_recommendations:
+            asyncio.create_task(
+                self._create_recommendations_for_user(user_id, recommended_users_ids)
+            )
+        return await self._repo_profile.collect_list_of_profiles(recommended_users_ids)

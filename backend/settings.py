@@ -35,6 +35,7 @@ class _BaseSettings(pydantic.BaseSettings):
     redis_max_reties_count: int = 3
 
     max_count_of_avatars: int = 5
+    count_of_recommendations: int = 5
 
 
 class _JWTSettings(pydantic.BaseSettings):
