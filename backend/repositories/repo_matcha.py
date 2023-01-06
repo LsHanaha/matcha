@@ -5,11 +5,8 @@ from datetime import date
 from databases.interfaces import Record
 
 from backend.models import models_enums, models_matcha, models_user
-from backend.repositories import (
-    BaseAsyncRepository,
-    postgres_reconnect,
-    repo_interfaces,
-)
+from backend.repositories import (BaseAsyncRepository, postgres_reconnect,
+                                  repo_interfaces)
 from backend.settings import settings_base
 
 
@@ -121,7 +118,7 @@ class MatchaDatabaseRepository(BaseAsyncRepository, repo_interfaces.MatchaInterf
     def _make_query_entities(
         self,
         params: models_matcha.SearchQueryModel,
-        order_direction: models_enums.SearchOrder,
+        order_direction: models_enums.SearchOrderEnum,
         order_by: str | None,
         offset: int,
         limit: int,
@@ -180,7 +177,7 @@ class MatchaDatabaseRepository(BaseAsyncRepository, repo_interfaces.MatchaInterf
     async def search_users(
         self,
         params: models_matcha.SearchQueryModel,
-        order_direction: models_enums.SearchOrder,
+        order_direction: models_enums.SearchOrderEnum,
         order_by: str | None,
         offset: int,
         limit: int,
@@ -211,7 +208,7 @@ class MatchaDatabaseRepository(BaseAsyncRepository, repo_interfaces.MatchaInterf
         params: models_matcha.SearchQueryModel,
         user_profile: models_user.UserProfile,
         coordinates_query: str,
-        order_direction: models_enums.SearchOrder = models_enums.SearchOrder.ASC,
+        order_direction: models_enums.SearchOrderEnum = models_enums.SearchOrderEnum.ASC,
         excluded_users: list[int] | None = None,
         order_by: str = "fame_rating, interests_common",
         limit: int = settings_base.limit_recommendations,

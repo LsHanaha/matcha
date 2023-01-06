@@ -208,7 +208,7 @@ class MatchaInterface(ABC):
     async def search_users(
         self,
         params: models_matcha.SearchQueryModel,
-        order_direction: models_enums.SearchOrder,
+        order_direction: models_enums.SearchOrderEnum,
         order_by: str,
         offset: int,
         limit: int,
@@ -224,7 +224,7 @@ class MatchaInterface(ABC):
         user_profile: models_user.UserProfile,
         coordinates_query: str,
         excluded_users: list[int] | None = None,
-        order_direction: models_enums.SearchOrder = models_enums.SearchOrder.ASC,
+        order_direction: models_enums.SearchOrderEnum = models_enums.SearchOrderEnum.ASC,
         order_by: str = "fame_rating, interests_common",
         limit: int = settings_base.limit_recommendations,
         offset: int = 0,

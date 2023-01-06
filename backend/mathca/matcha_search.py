@@ -76,7 +76,7 @@ class MatchaSearch:
     async def find_users(
         self,
         params: models_matcha.SearchQueryModel,
-        order_direction: models_enums.SearchOrder,
+        order_direction: models_enums.SearchOrderEnum,
         offset: int,
         limit: int,
         order_by: str | None = None,

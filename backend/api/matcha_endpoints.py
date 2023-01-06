@@ -16,7 +16,7 @@ ROUTER_OBJ: fastapi.APIRouter = fastapi.APIRouter()
 @inject
 async def search_users(
     params: models_matcha.SearchQueryModel,
-    order_direction: models_enums.SearchOrder = models_enums.SearchOrder.ASC,
+    order_direction: models_enums.SearchOrderEnum = models_enums.SearchOrderEnum.ASC,
     offset: int = 0,
     limit: int = 10,
     order_by: str | None = None,
