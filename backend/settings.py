@@ -36,6 +36,7 @@ class _BaseSettings(pydantic.BaseSettings):
 
     max_count_of_avatars: int = 5
     count_of_recommendations: int = 5
+    limit_recommendations: int = 20
 
 
 class _JWTSettings(pydantic.BaseSettings):

@@ -16,7 +16,6 @@ class UserRecommendationsService(BaseRedisRepository):
         self, user_id: int, recommendations: list[int]
     ) -> None:
         """Store recommendations in redis list."""
-        await self.delete_all_recommendations(user_id)
         for recommendation in recommendations:
             await self.redis_connection.lpush(
                 self._create_user_recommendations_key(user_id), recommendation

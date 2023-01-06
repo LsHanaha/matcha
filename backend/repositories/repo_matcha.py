@@ -10,6 +10,7 @@ from backend.repositories import (
     postgres_reconnect,
     repo_interfaces,
 )
+from backend.settings import settings_base
 
 
 class MatchaDatabaseRepository(BaseAsyncRepository, repo_interfaces.MatchaInterface):
@@ -21,6 +22,7 @@ class MatchaDatabaseRepository(BaseAsyncRepository, repo_interfaces.MatchaInterf
         query_mods: dict,
         interests: list[str] | None,
         is_count: bool = False,
+        excluded_users_query: str = "",
     ) -> list[dict] | int:
         """Return records from database."""
         (
@@ -32,8 +34,7 @@ class MatchaDatabaseRepository(BaseAsyncRepository, repo_interfaces.MatchaInterf
 
         query: str = f"""
             SELECT u.user_id as user_id, first_name, last_name, birthday, gender, sexual_orientation, biography, 
-                   main_photo_name, fame_rating, last_online, interests, city, interests_common, is_match, is_paired, 
-                   is_blocked, is_reported
+                   main_photo_name, fame_rating, last_online, interests, city, interests_common
             FROM (
                 SELECT puser_id as user_id, first_name, last_name, birthday, gender, sexual_orientation, biography, 
                        main_photo_name, fame_rating, last_online, interests, pcity as city,
@@ -52,10 +53,12 @@ class MatchaDatabaseRepository(BaseAsyncRepository, repo_interfaces.MatchaInterf
                     AND {fame_rating_gap_query} 
                     AND {age_gap_query}
                     AND puser_id != :user_id
+                    {excluded_users_query}
                 )
             ) as u
             LEFT JOIN visits as v
-            ON v.target_user_id = u.user_id and v.user_id = :user_id
+            ON v.target_user_id = u.user_id and v.user_id = :user_id 
+            WHERE (is_paired is NULL AND is_blocked is NULL AND is_reported is NULL AND is_match is NULL)
             {f"ORDER BY {query_mods.pop('order_by')} {query_mods.pop('order_direction')} LIMIT :limit OFFSET :offset ;" 
              if not is_count else ''}
         """
@@ -201,3 +204,38 @@ class MatchaDatabaseRepository(BaseAsyncRepository, repo_interfaces.MatchaInterf
             array_of_queries, query_mods, params.interests_id
         )
         return models_matcha.SearchUsersModels(users=records, amount=amount)
+
+    @postgres_reconnect
+    async def recommend_users(
+        self,
+        params: models_matcha.SearchQueryModel,
+        user_profile: models_user.UserProfile,
+        coordinates_query: str,
+        order_direction: models_enums.SearchOrder = models_enums.SearchOrder.ASC,
+        excluded_users: list[int] | None = None,
+        order_by: str = "fame_rating, interests_common",
+        limit: int = settings_base.limit_recommendations,
+        offset: int = 0,
+    ) -> list[models_user.UserProfile]:
+        """Create new list of recommended users for user_id."""
+        array_of_queries, query_mods = self._make_query_entities(
+            params,
+            order_direction,
+            order_by,
+            offset,
+            limit,
+            user_profile,
+            coordinates_query,
+        )
+        excluded_users_query: str = ""
+        if excluded_users:
+            excluded_users_query = (
+                f" AND puser_id NOT IN ({','.join(map(str, excluded_users))})"
+            )
+        records: list[dict] = await self._collect_rows(
+            array_of_queries,
+            query_mods,
+            params.interests_id,
+            excluded_users_query=excluded_users_query,
+        )
+        return [models_user.UserProfile(**record) for record in records]

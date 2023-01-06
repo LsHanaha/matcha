@@ -125,5 +125,6 @@ class IOCContainer(containers.DeclarativeContainer):
         repo_recommendations=recommendations_repo,
         repo_profile=profile_repository,
         repo_matcha_search=matcha_search_repository,
+        repo_preferences=preferences_repository,
         matcha_search_service=matcha_search_service,
     )

@@ -10,6 +10,7 @@ from backend.models import (
     models_user,
     models_visits,
 )
+from backend.settings import settings_base
 
 
 class AuthRepositoryInterface(ABC):
@@ -215,6 +216,21 @@ class MatchaInterface(ABC):
         coordinates_query: str,
     ) -> models_matcha.SearchUsersModels:
         """Search users by params."""
+
+    @abstractmethod
+    async def recommend_users(
+        self,
+        params: models_matcha.SearchQueryModel,
+        user_profile: models_user.UserProfile,
+        coordinates_query: str,
+        excluded_users: list[int] | None = None,
+        order_direction: models_enums.SearchOrder = models_enums.SearchOrder.ASC,
+        order_by: str = "fame_rating, interests_common",
+        limit: int = settings_base.limit_recommendations,
+        offset: int = 0,
+    ) -> list[models_user.UserProfile]:
+        """Recommended users."""
+        pass
 
     @staticmethod
     @abstractmethod
