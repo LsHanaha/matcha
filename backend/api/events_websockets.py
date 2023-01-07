@@ -27,7 +27,7 @@ async def websocket_endpoint(
 ):
     """Handle income websocket events."""
     if not settings_base.debug:
-        authorize.jwt_required(token=token)
+        authorize.jwt_required("websocket", token=token)
     user_id: int = authorize.get_jwt_subject()
     await ws_manager.accept_connect(websocket, user_id)
     try:

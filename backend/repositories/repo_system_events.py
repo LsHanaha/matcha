@@ -33,13 +33,13 @@ class SystemEventsRepository(
         return models_events.SystemEventModel(**result._mapping)
 
     @postgres_reconnect
-    async def collect_events_for_user(
+    async def collect_system_events_for_user(
         self, user_id: int, offset: int, limit: int
-    ) -> list[models_events.OutputEventModel]:
+    ) -> list[models_events.RetrieveSystemEventsModel]:
         """Collect system events."""
         result: list[Record] = await self.database_connection.fetch_all(
             """
-            SELECT s_e.id as id, s_e.user_id as user_id, target_user_id, type_event, first_name, last_name, main_photo_name
+            SELECT e_id as id, s_e.user_id as user_id, target_user_id, type_event, first_name, last_name, main_photo_name
             FROM 
             (
                 SELECT id as e_id, user_id, target_user_id, type_event            
@@ -56,22 +56,18 @@ class SystemEventsRepository(
         if not result:
             return []
         return [
-            models_events.OutputEventModel(
-                system_payload=models_events.RetrieveSystemEventsModel(**row._mapping),
-                event_type=models_enums.WebsocketEventTypesEnum.SYSTEM.value,
-            )
-            for row in result
+            models_events.RetrieveSystemEventsModel(**row._mapping) for row in result
         ]
 
-    async def update_system_events(self, user_id: int, target_user_id: int) -> bool:
+    async def update_system_events(self, user_id: int) -> bool:
         """Update system events, especially is_read status."""
         result: bool = await self.database_connection.execute(
             """
             UPDATE system_events
             SET is_read = TRUE
-            WHERE user_id = :user_id AND target_user_id = :target_user_id;
+            WHERE user_id = :user_id AND event_time < NOW();
             """,
-            {"user_id": user_id, "target_user_id": target_user_id},
+            {"user_id": user_id},
         )
         if not result:
             return False

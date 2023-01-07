@@ -250,10 +250,10 @@ class SystemEventsRepoInterface(Protocol):
     ) -> models_events.SystemEventModel | None:
         """Insert new system event."""
 
-    async def collect_events_for_user(
+    async def collect_system_events_for_user(
         self, user_id: int, offset: int, limit: int
-    ) -> list[models_events.OutputEventModel]:
+    ) -> list[models_events.RetrieveSystemEventsModel]:
         """Collect system events."""
 
-    async def update_system_events(self, user_id: int, target_user_id: int) -> bool:
+    async def update_system_events(self, user_id: int) -> bool:
         """Update system events."""

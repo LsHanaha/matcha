@@ -76,7 +76,7 @@ APP_OBJ.include_router(
     events_websockets.ROUTER_OBJ, prefix="/ws", tags=["websocket events"]
 )
 APP_OBJ.include_router(
-    events_websockets.ROUTER_OBJ, prefix="/events", tags=["api for events"]
+    events_endpoints.ROUTER_OBJ, prefix="/events", tags=["api for events"]
 )
 
 APP_OBJ.add_middleware(
