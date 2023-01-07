@@ -5,6 +5,7 @@ from dependency_injector import containers, providers
 
 from backend import settings
 from backend.api import locations
+from backend.events import WebsocketConnectionManager
 from backend.mathca import matcha_search, matcha_visits, mathcha_helpers
 from backend.repositories import (
     repo_auth,
@@ -28,6 +29,9 @@ class IOCContainer(containers.DeclarativeContainer):
     database_connection: providers.Resource[
         resources.DatabaseResource
     ] = providers.Resource(resources.DatabaseResource)
+    websocket_manager: providers.Resource[
+        WebsocketConnectionManager
+    ] = providers.Resource(WebsocketConnectionManager)
 
     auth_repository: providers.Factory[
         repo_interfaces.AuthRepositoryInterface

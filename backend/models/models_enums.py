@@ -25,14 +25,14 @@ class SearchOrderEnum(enum.IntEnum):
     DESC = 1
 
 
-class SocketEventTypesEnum(enum.IntEnum):
-    """Types of socket events."""
+class SocketTypesEnum(enum.IntEnum):
+    """Types of socket payload."""
 
     SYSTEM = 0
     CHAT = 1
 
 
-class SocketSystemTypesEnum(enum.IntEnum):
+class SystemEventTypesEnum(enum.IntEnum):
     """Types for system events."""
 
     LIKE = 0
