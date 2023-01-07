@@ -247,7 +247,7 @@ class SystemEventsRepoInterface(Protocol):
 
     async def store_new_event(
         self, system_event: models_events.SystemEventModel
-    ) -> bool:
+    ) -> models_events.SystemEventModel | None:
         """Insert new system event."""
 
     async def collect_events_for_user(

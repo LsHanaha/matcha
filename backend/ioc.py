@@ -30,9 +30,9 @@ class IOCContainer(containers.DeclarativeContainer):
     database_connection: providers.Resource[
         resources.DatabaseResource
     ] = providers.Resource(resources.DatabaseResource)
-    websocket_manager: providers.Resource[
+    websocket_manager: providers.Singleton[
         WebsocketConnectionManager
-    ] = providers.Resource(WebsocketConnectionManager)
+    ] = providers.Singleton(WebsocketConnectionManager)
 
     auth_repository: providers.Factory[
         repo_interfaces.AuthRepositoryInterface
@@ -86,6 +86,15 @@ class IOCContainer(containers.DeclarativeContainer):
         database_connection=database_connection,
     )
 
+    websocket_system_events: providers.Factory[
+        system_events.WebsocketSystemEvents
+    ] = providers.Factory(
+        system_events.WebsocketSystemEvents,
+        repo_system_events=system_events_repository,
+        repo_profile=profile_repository,
+        ws_manager=websocket_manager,
+    )
+
     user_relationships: providers.Factory[
         matcha_visits.UsersRelationships
     ] = providers.Factory(
@@ -93,6 +102,7 @@ class IOCContainer(containers.DeclarativeContainer):
         repo_profile=profile_repository,
         repo_matched=matched_repository,
         repo_visited=visited_users_repository,
+        websocket_system_events=websocket_system_events,
     )
     location_client: providers.Resource[locations.LocationClient] = providers.Resource(
         locations.LocationClient,
@@ -138,11 +148,4 @@ class IOCContainer(containers.DeclarativeContainer):
         repo_matcha_search=matcha_search_repository,
         repo_preferences=preferences_repository,
         matcha_search_service=matcha_search_service,
-    )
-    websocket_system_events: providers.Factory[
-        system_events.WebsocketSystemEvents
-    ] = providers.Factory(
-        system_events.WebsocketSystemEvents,
-        repo_system_events=system_events_repository,
-        ws_manager=websocket_manager,
     )

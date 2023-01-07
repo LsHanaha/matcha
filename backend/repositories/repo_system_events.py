@@ -2,8 +2,11 @@
 from databases.interfaces import Record
 
 from backend.models import models_enums, models_events
-from backend.repositories import (BaseAsyncRepository, postgres_reconnect,
-                                  repo_interfaces)
+from backend.repositories import (
+    BaseAsyncRepository,
+    postgres_reconnect,
+    repo_interfaces,
+)
 
 
 class SystemEventsRepository(
@@ -14,20 +17,20 @@ class SystemEventsRepository(
     @postgres_reconnect
     async def store_new_event(
         self, system_event: models_events.SystemEventModel
-    ) -> bool:
+    ) -> models_events.SystemEventModel | None:
         """Insert new system event."""
-        result: bool = await self.database_connection.execute(
+        result: Record = await self.database_connection.execute(
             """
                 INSERT INTO system_events(user_id, target_user_id, type_event)
                 VALUES (:user_id, :target_user_id, :type_event)
                 ON CONFLICT ON CONSTRAINT uc_users_pair_system
-                DO NOTHING RETURNING 1;
+                DO NOTHING RETURNING *;
             """,
             system_event.dict(exclude={"system_event", "event_time"}),
         )
         if not result:
-            return False
-        return bool(result)
+            return None
+        return models_events.SystemEventModel(**result._mapping)
 
     @postgres_reconnect
     async def collect_events_for_user(

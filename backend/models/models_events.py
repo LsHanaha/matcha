@@ -11,7 +11,7 @@ from backend.models import models_enums, models_user
 class CommonForEvents(pydantic.BaseModel):
     """Common fields for all events."""
 
-    id: int | None
+    id: int | None = None
     user_id: int
     target_user_id: int
     event_time: datetime.datetime | None = None

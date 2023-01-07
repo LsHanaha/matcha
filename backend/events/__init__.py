@@ -26,9 +26,5 @@ class WebsocketConnectionManager:
         websocket_connection: fastapi.WebSocket | None = self._active_connections.get(
             target_user_id
         )
-        if not websocket_connection:
-            raise fastapi.websockets.WebSocketDisconnect(
-                code=fastapi.status.WS_1000_NORMAL_CLOSURE,
-                reason="Connection not found",
-            )
-        await websocket_connection.send_text(message)
+        if websocket_connection:
+            await websocket_connection.send_text(message)
