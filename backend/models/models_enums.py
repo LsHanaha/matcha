@@ -25,7 +25,7 @@ class SearchOrderEnum(enum.IntEnum):
     DESC = 1
 
 
-class SocketTypesEnum(enum.IntEnum):
+class WebsocketEventTypesEnum(enum.IntEnum):
     """Types of socket payload."""
 
     SYSTEM = 0

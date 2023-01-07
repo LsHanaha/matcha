@@ -1,9 +1,11 @@
 """Interfaces for database repositories."""
 
 from abc import ABC, abstractmethod
+from typing import Protocol
 
 from backend.models import (
     models_enums,
+    models_events,
     models_location,
     models_matcha,
     models_preferences,
@@ -238,3 +240,20 @@ class MatchaInterface(ABC):
         user_profile: models_user.UserProfile,
     ) -> str:
         """Determine sexual preferences for user."""
+
+
+class SystemEventsRepoInterface(Protocol):
+    """System events repository interface."""
+
+    async def store_new_event(
+        self, system_event: models_events.SystemEventModel
+    ) -> bool:
+        """Insert new system event."""
+
+    async def collect_events_for_user(
+        self, user_id: int, offset: int, limit: int
+    ) -> list[models_events.OutputEventModel]:
+        """Collect system events."""
+
+    async def update_system_events(self, user_id: int, target_user_id: int) -> bool:
+        """Update system events."""

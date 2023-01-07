@@ -7,6 +7,8 @@ from starlette.middleware.cors import CORSMiddleware
 from backend import ioc
 from backend.api import (
     error_handlers,
+    events_endpoints,
+    events_websockets,
     interests_endpoints,
     matcha_endpoints,
     preference_endpoints,
@@ -32,6 +34,8 @@ async def startup():
             interests_endpoints,
             visits_endpoints,
             matcha_endpoints,
+            events_websockets,
+            events_endpoints,
         ]
     )
 
@@ -68,6 +72,12 @@ APP_OBJ.include_router(
     tags=["Users visits and new statuses"],
 )
 APP_OBJ.include_router(matcha_endpoints.ROUTER_OBJ, prefix="/matcha", tags=["matcha"])
+APP_OBJ.include_router(
+    events_websockets.ROUTER_OBJ, prefix="/ws", tags=["websocket events"]
+)
+APP_OBJ.include_router(
+    events_websockets.ROUTER_OBJ, prefix="/events", tags=["api for events"]
+)
 
 APP_OBJ.add_middleware(
     CORSMiddleware,

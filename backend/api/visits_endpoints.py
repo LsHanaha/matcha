@@ -5,6 +5,7 @@ from dependency_injector.wiring import Provide, inject
 from fastapi_jwt_auth import AuthJWT
 
 from backend import ioc
+from backend.helpers import update_last_online
 from backend.mathca import matcha_visits
 from backend.models import models_base, models_user, models_visits
 from backend.settings import settings_base
@@ -19,6 +20,7 @@ async def update_visit(
     relationship_db: matcha_visits.UsersRelationships = fastapi.Depends(
         Provide[ioc.IOCContainer.user_relationships]
     ),
+    _=fastapi.Depends(update_last_online),
     authorize: AuthJWT = fastapi.Depends(),
 ):
     """New visit for user, can change block, like, etc."""
@@ -38,6 +40,7 @@ async def collect_visited_users(
     relationship_db: matcha_visits.UsersRelationships = fastapi.Depends(
         Provide[ioc.IOCContainer.user_relationships]
     ),
+    _=fastapi.Depends(update_last_online),
     authorize: AuthJWT = fastapi.Depends(),
 ):
     """Collect visited users for specific user."""
@@ -61,6 +64,7 @@ async def collect_blocked_users(
     relationship_db: matcha_visits.UsersRelationships = fastapi.Depends(
         Provide[ioc.IOCContainer.user_relationships]
     ),
+    _=fastapi.Depends(update_last_online),
     authorize: AuthJWT = fastapi.Depends(),
 ):
     """Collect blocked users for specific user."""
@@ -84,6 +88,7 @@ async def collect_visitors(
     relationship_db: matcha_visits.UsersRelationships = fastapi.Depends(
         Provide[ioc.IOCContainer.user_relationships]
     ),
+    _=fastapi.Depends(update_last_online),
     authorize: AuthJWT = fastapi.Depends(),
 ):
     """Collect users who saw user_id profile."""

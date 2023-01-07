@@ -23,19 +23,24 @@ class UserAuth(UserLogin):
     is_active: bool | None = False
 
 
-class UserProfile(pydantic.BaseModel):
+class UserProfileEventsModel(pydantic.BaseModel):
+    """User profile model for events."""
+
+    first_name: str
+    last_name: str
+    main_photo_name: str
+
+
+class UserProfile(UserProfileEventsModel):
     """Model for user about table."""
 
     user_id: int | None
-    first_name: str
-    last_name: str
     birthday: datetime.date
     gender: models_enums.GenderEnum
     sexual_orientation: models_enums.SexualPreferencesEnum = (
         models_enums.SexualPreferencesEnum.BI
     )
     biography: str | None
-    main_photo_name: str
     interests: list[int]
     city: str
 

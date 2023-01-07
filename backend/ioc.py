@@ -5,7 +5,7 @@ from dependency_injector import containers, providers
 
 from backend import settings
 from backend.api import locations
-from backend.events import WebsocketConnectionManager
+from backend.events import WebsocketConnectionManager, chat_events, system_events
 from backend.mathca import matcha_search, matcha_visits, mathcha_helpers
 from backend.repositories import (
     repo_auth,
@@ -15,6 +15,7 @@ from backend.repositories import (
     repo_matcha,
     repo_preference,
     repo_profile,
+    repo_system_events,
     repo_visits,
 )
 from backend.repositories_redis import redis_avatars, redis_recommendations
@@ -78,6 +79,13 @@ class IOCContainer(containers.DeclarativeContainer):
     ] = providers.Factory(
         repo_matcha.MatchaDatabaseRepository, database_connection=database_connection
     )
+    system_events_repository: providers.Factory[
+        repo_interfaces.SystemEventsRepoInterface
+    ] = providers.Factory(
+        repo_system_events.SystemEventsRepository,
+        database_connection=database_connection,
+    )
+
     user_relationships: providers.Factory[
         matcha_visits.UsersRelationships
     ] = providers.Factory(
@@ -86,7 +94,6 @@ class IOCContainer(containers.DeclarativeContainer):
         repo_matched=matched_repository,
         repo_visited=visited_users_repository,
     )
-
     location_client: providers.Resource[locations.LocationClient] = providers.Resource(
         locations.LocationClient,
         base_url=settings.settings_location.service_url,
@@ -131,4 +138,11 @@ class IOCContainer(containers.DeclarativeContainer):
         repo_matcha_search=matcha_search_repository,
         repo_preferences=preferences_repository,
         matcha_search_service=matcha_search_service,
+    )
+    websocket_system_events: providers.Factory[
+        system_events.WebsocketSystemEvents
+    ] = providers.Factory(
+        system_events.WebsocketSystemEvents,
+        repo_system_events=system_events_repository,
+        ws_manager=websocket_manager,
     )
