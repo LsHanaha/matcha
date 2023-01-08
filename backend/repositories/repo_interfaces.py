@@ -277,3 +277,8 @@ class ChatRepoInterface(ABC):
     @abstractmethod
     async def update_is_read(self, user_id: int, target_user_id: int) -> bool:
         """Update messages, update is read field."""
+
+    async def get_profiles_for_chats(
+        self, user_id: int
+    ) -> list[models_events.RetrieveChatEventsModel]:
+        """Get all chats with profiles for user_id."""

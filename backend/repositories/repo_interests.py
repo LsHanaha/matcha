@@ -39,7 +39,7 @@ class InterestsDatabaseRepository(
             SELECT *
             FROM interests
             WHERE LOWER(name) LIKE '%{word.lower()}%'
-            ORDER BY name ASC;
+            ORDER BY name;
             """
         )
         return [models_user.Interests(**dict(rec)) for rec in records]

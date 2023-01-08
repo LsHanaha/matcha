@@ -13,6 +13,8 @@ _DISTANCE_BETWEEN_LONGITUDE_EQUATOR: float = 111.3
 
 
 class CoordinatesMatchaHelpers:
+    """Helpers for calculating coordinates from distance and vice versa."""
+
     @staticmethod
     def calculate_distance_from_coords(
         coord1: CoordinatesLocationModel,
@@ -28,11 +30,11 @@ class CoordinatesMatchaHelpers:
         delta_longitude: float = longitude2 - longitude1
         delta_latitude: float = latitude2 - latitude1
 
-        a: float = (
+        val: float = (
             sin(delta_latitude / 2) ** 2
             + cos(latitude1) * cos(latitude2) * sin(delta_longitude / 2) ** 2
         )
-        return 2 * asin(sqrt(a)) * _EARTH_RADIUS_KM
+        return 2 * asin(sqrt(val)) * _EARTH_RADIUS_KM
 
     @staticmethod
     def calculate_coords_from_distance(
