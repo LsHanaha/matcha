@@ -19,7 +19,7 @@ class SystemEventsRepository(
         self, system_event: models_events.SystemEventModel
     ) -> models_events.SystemEventModel | None:
         """Insert new system event."""
-        result: Record = await self.database_connection.execute(
+        result: Record = await self.database_connection.fetch_one(
             """
                 INSERT INTO system_events(user_id, target_user_id, type_event)
                 VALUES (:user_id, :target_user_id, :type_event)
@@ -65,7 +65,7 @@ class SystemEventsRepository(
             """
             UPDATE system_events
             SET is_read = TRUE
-            WHERE user_id = :user_id AND event_time < NOW();
+            WHERE user_id = :user_id AND is_read = false AND event_time < NOW();
             """,
             {"user_id": user_id},
         )

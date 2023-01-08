@@ -257,3 +257,23 @@ class SystemEventsRepoInterface(Protocol):
 
     async def update_system_events(self, user_id: int) -> bool:
         """Update system events."""
+
+
+class ChatRepoInterface(ABC):
+    """Chat repository interface."""
+
+    @abstractmethod
+    async def store_new_message(
+        self, message: models_events.ChatEventModel
+    ) -> models_events.ChatEventModel | None:
+        """Store new message."""
+
+    @abstractmethod
+    async def retrieve_messages(
+        self, matcha_pair_id: int, limit: int, offset: int
+    ) -> list[models_events.ChatEventModel]:
+        """Retrieve messages for chatting room."""
+
+    @abstractmethod
+    async def update_is_read(self, user_id: int, target_user_id: int) -> bool:
+        """Update messages, update is read field."""

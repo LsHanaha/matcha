@@ -23,23 +23,25 @@ def upgrade() -> None:
             "target_user_id", sa.Integer, sa.ForeignKey("users.id", ondelete="CASCADE")
         ),
         sa.Column(
+            "matcha_pair_id",
+            sa.Integer,
+            sa.ForeignKey("matches.id", ondelete="CASCADE"),
+            nullable=False,
+        ),
+        sa.Column("text", sa.String, nullable=False),
+        sa.Column(
             "message_time",
             sa.DateTime,
             server_default=sa.text("now()"),
             server_onupdate=sa.text("now()"),
             nullable=False,
         ),
-        sa.Column("message", sa.String, nullable=False),
         sa.Column(
             "is_read",
             sa.Boolean,
             server_default=sa.schema.DefaultClause("0"),
             nullable=False,
         ),
-    )
-
-    op.create_unique_constraint(
-        "uc_users_pair_chat", "chat_messages", ["user_id", "target_user_id"]
     )
 
 

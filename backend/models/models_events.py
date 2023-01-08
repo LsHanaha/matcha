@@ -28,6 +28,7 @@ class ChatEventModel(CommonForEvents):
     """Chat event model for handling messages from/to users."""
 
     text: str
+    matcha_pair_id: int | None = None
 
 
 class RetrieveSystemEventsModel(SystemEventModel, models_user.UserProfileEventsModel):

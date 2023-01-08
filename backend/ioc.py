@@ -9,6 +9,7 @@ from backend.events import WebsocketConnectionManager, chat_events, system_event
 from backend.mathca import matcha_search, matcha_visits, mathcha_helpers
 from backend.repositories import (
     repo_auth,
+    repo_chat,
     repo_interests,
     repo_interfaces,
     repo_location,
@@ -84,6 +85,11 @@ class IOCContainer(containers.DeclarativeContainer):
     ] = providers.Factory(
         repo_system_events.SystemEventsRepository,
         database_connection=database_connection,
+    )
+    chat_repository: providers.Factory[
+        repo_chat.ChatDatabaseRepository
+    ] = providers.Factory(
+        repo_chat.ChatDatabaseRepository, database_connection=database_connection
     )
 
     websocket_system_events: providers.Factory[
