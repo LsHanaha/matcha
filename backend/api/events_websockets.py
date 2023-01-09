@@ -6,7 +6,7 @@ from dependency_injector.wiring import Provide, inject
 from fastapi_jwt_auth import AuthJWT
 
 from backend import ioc
-from backend.events import WebsocketConnectionManager
+from backend.events import WebsocketConnectionManager, chat_events
 from backend.helpers import update_last_online
 from backend.models import models_events
 from backend.settings import settings_base
@@ -23,8 +23,11 @@ async def websocket_endpoint(
     ws_manager: WebsocketConnectionManager = fastapi.Depends(
         Provide[ioc.IOCContainer.websocket_manager]
     ),
+    websocket_chat_events: chat_events.WebsocketChatEvents = fastapi.Depends(
+        Provide[ioc.IOCContainer.websocket_chat_events]
+    ),
     authorize: AuthJWT = fastapi.Depends(),
-):
+) -> None:
     """Handle income websocket events."""
     if not settings_base.debug:
         authorize.jwt_required("websocket", token=token)
@@ -33,6 +36,6 @@ async def websocket_endpoint(
     try:
         while True:
             event: models_events.ChatEventModel = await websocket.receive_json()
-
+            await websocket_chat_events.handle_income_message(event)
     except fastapi.websockets.WebSocketDisconnect:
         await ws_manager.handle_disconnect(user_id)

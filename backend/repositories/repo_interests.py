@@ -48,7 +48,6 @@ class InterestsDatabaseRepository(
     async def insert_new_interest(self, name: str) -> models_user.Interests:
         """Add new interest."""
 
-        # TODO add handler for unique violation error  if needed
         new_id: int = await self.database_connection.execute(
             """
             INSERT INTO interests(name)

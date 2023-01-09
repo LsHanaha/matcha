@@ -8,12 +8,17 @@ import pydantic
 from backend.models import models_enums, models_user
 
 
-class CommonForEvents(pydantic.BaseModel):
+class UserPairModel(pydantic.BaseModel):
+    """User pair model."""
+
+    user_id: int
+    target_user_id: int
+
+
+class CommonForEvents(UserPairModel):
     """Common fields for all events."""
 
     id: int | None = None
-    user_id: int
-    target_user_id: int
     event_time: datetime.datetime | None = None
     is_read: bool = False
 
@@ -49,3 +54,14 @@ class OutputEventModel(pydantic.BaseModel):
     system_payload: RetrieveSystemEventsModel | None = None
     chat_payload: RetrieveChatEventsModel | None = None
     event_type: models_enums.WebsocketEventTypesEnum
+
+
+class ChatBaseInfoModel(pydantic.BaseModel):
+    """Model for retrieving basic info oabout current chat and user's
+    partner."""
+
+    target_user_id: int
+    first_name: str
+    last_name: str
+    main_photo_name: str
+    matcha_pair_id: int

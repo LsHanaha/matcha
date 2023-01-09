@@ -55,7 +55,9 @@ class ChatDatabaseRepository(BaseAsyncRepository, repo_interfaces.ChatRepoInterf
                 "matcha_pair_id": matcha_pair_id,
                 "limit": limit,
                 "offset": offset,
-                last_message_time: last_message_time if last_message_time else "now()",
+                "last_message_time": last_message_time
+                if last_message_time
+                else datetime.datetime.now(),
             },
         )
         return [models_events.ChatEventModel(**dict(message)) for message in messages]
@@ -68,36 +70,37 @@ class ChatDatabaseRepository(BaseAsyncRepository, repo_interfaces.ChatRepoInterf
             UPDATE chat_messages
             SET is_read=true
             WHERE user_id=:user_id and target_user_id=:target_user_id AND is_read=false AND message_time < NOW()
-            """
+            RETURNING true;
+            """,
+            {"user_id": user_id, "target_user_id": target_user_id},
         )
         return bool(result)
 
     @postgres_reconnect
-    async def get_profiles_for_chats(
+    async def get_current_chats_for_user(
         self, user_id: int
-    ) -> list[models_events.RetrieveChatEventsModel]:
+    ) -> list[models_events.ChatBaseInfoModel]:
         """Get all chats with profiles for user_id."""
         result: list[Record] = await self.database_connection.fetch_all(
             """
-            SELECT user_id, first_name, last_name, main_photo_name, matcha_pair_id
+            SELECT user_id as target_user_id, first_name, last_name, main_photo_name, matcha_pair_id
             FROM (
-                    SELECT COALESCE(NULLIF(first_user_id, :user_id), NULLIF(second_user_id, :user_id)) as chat_user_id, 
-                           matcha_pair_id 
-                    FROM ( 
-                        SELECT DISTINCT matcha_pair_id
-                        FROM chat_messages
-                        WHERE user_id=:user_id OR target_user_id=:user_id
-                    ) as msgs
-                    LEFT JOIN matches as match
-                    ON msgs.matcha_pair_id = match.id
-                    ORDER BY match.id DESC) as chat_users
-                LEFT JOIN profiles as p
-                ON p.user_id = chat_users.chat_user_id
+                SELECT COALESCE(NULLIF(first_user_id, :user_id), NULLIF(second_user_id, :user_id)) as chat_user_id, 
+                       matcha_pair_id 
+                FROM ( 
+                    SELECT DISTINCT matcha_pair_id
+                    FROM chat_messages
+                    WHERE user_id=:user_id OR target_user_id=:user_id
+                ) as msgs
+                LEFT JOIN matches as match
+                ON msgs.matcha_pair_id = match.id
+                ORDER BY match.id DESC
+            ) as chat_users
+            LEFT JOIN profiles as p
+            ON p.user_id = chat_users.chat_user_id
             """,
             {"user_id": user_id},
         )
         if not result:
             return []
-        return [
-            models_events.RetrieveChatEventsModel(**dict(record)) for record in result
-        ]
+        return [models_events.ChatBaseInfoModel(**dict(record)) for record in result]

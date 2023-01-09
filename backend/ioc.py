@@ -100,6 +100,14 @@ class IOCContainer(containers.DeclarativeContainer):
         repo_profile=profile_repository,
         ws_manager=websocket_manager,
     )
+    websocket_chat_events: providers.Factory[
+        chat_events.WebsocketChatEvents
+    ] = providers.Factory(
+        chat_events.WebsocketChatEvents,
+        repo_chat=chat_repository,
+        repo_profile=profile_repository,
+        ws_manager=websocket_manager,
+    )
 
     user_relationships: providers.Factory[
         matcha_visits.UsersRelationships

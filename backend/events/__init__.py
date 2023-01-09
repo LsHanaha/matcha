@@ -21,10 +21,12 @@ class WebsocketConnectionManager:
         connection: fastapi.WebSocket = self._active_connections.pop(user_id)
         await connection.close(reason="Something went wrong. Try to reconnect.")
 
-    async def send_personal_message(self, message: str, target_user_id: int) -> None:
+    async def send_personal_message(self, message: str, target_user_id: int) -> bool:
         """Send message to target_user_id."""
         websocket_connection: fastapi.WebSocket | None = self._active_connections.get(
             target_user_id
         )
         if websocket_connection:
             await websocket_connection.send_text(message)
+            return True
+        return False

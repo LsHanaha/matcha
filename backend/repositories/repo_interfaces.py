@@ -1,5 +1,6 @@
 """Interfaces for database repositories."""
 
+import datetime
 from abc import ABC, abstractmethod
 from typing import Protocol
 
@@ -270,7 +271,11 @@ class ChatRepoInterface(ABC):
 
     @abstractmethod
     async def retrieve_messages(
-        self, matcha_pair_id: int, limit: int, offset: int
+        self,
+        matcha_pair_id: int,
+        limit: int,
+        offset: int,
+        last_message_time: datetime.datetime | None = None,
     ) -> list[models_events.ChatEventModel]:
         """Retrieve messages for chatting room."""
 
@@ -278,7 +283,7 @@ class ChatRepoInterface(ABC):
     async def update_is_read(self, user_id: int, target_user_id: int) -> bool:
         """Update messages, update is read field."""
 
-    async def get_profiles_for_chats(
+    async def get_current_chats_for_user(
         self, user_id: int
-    ) -> list[models_events.RetrieveChatEventsModel]:
+    ) -> list[models_events.ChatBaseInfoModel]:
         """Get all chats with profiles for user_id."""
