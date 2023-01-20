@@ -1,0 +1,38 @@
+{
+  "root": true,
+  "parser": "@typescript-eslint/parser",
+  "plugins": ["@typescript-eslint", "react", "react-hooks", "mobx"],
+  "rules": {
+    "max-len": ["error", { "code": 100 }],
+    "@typescript-eslint/camelcase": "off",
+    "@typescript-eslint/ban-types": "off",
+    "@typescript-eslint/no-explicit-any": "off",
+    "@typescript-eslint/no-namespace": "off",
+    "@typescript-eslint/no-unused-vars": "off",
+    "@typescript-eslint/explicit-module-boundary-types": "off",
+    "@typescript-eslint/no-empty-function": [
+      "error",
+      { "allow": ["arrowFunctions"] }
+    ],
+    "mobx/missing-observer": "off",
+    "mobx/no-anonymous-observer": "off"
+  },
+  "extends": [
+    "airbnb",
+    "airbnb-typescript",
+    "eslint:recommended",
+    "prettier",
+    "plugin:mobx/recommended",
+    "plugin:@typescript-eslint/eslint-recommended",
+    "plugin:@typescript-eslint/recommended"
+  ],
+  "parserOptions": {
+    "project": ["./tsconfig.json"]
+  },
+  "env":
+  {
+    "browser": true,
+    "node": true,
+    "es6": true
+  }
+}
