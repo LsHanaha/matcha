@@ -8,13 +8,6 @@ import {
   Link
 } from "react-router-dom";
 
-const a= 1
-function foo (name  ) {
-  const last_name="doe"
-  const x=200
-
-}
-console.log(a  )
 function App() {
   const [isUserLoggedIn, setUserLoggedIn] = useState(false);
 
@@ -105,11 +98,4 @@ function App() {
 //     }}
 //   />
 // );
-const foo1 = () => {
-  return 1;
-}
-const bwe = {
-  a: 1
-}
-var b = 1
 export default App;
