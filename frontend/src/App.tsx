@@ -111,4 +111,5 @@ const foo1 = () => {
 const bwe = {
   a: 1
 }
+var b = 1
 export default App;
